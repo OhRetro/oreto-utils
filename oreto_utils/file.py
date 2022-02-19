@@ -1,23 +1,17 @@
 #File
-#0.1.1
 
 from os import remove as os_remove
 from os.path import isfile as osp_isfile
 from shutil import move as sh_move
-from configparser import ConfigParser
-import json
 
 class File:
     #Load/Read file
     def load(file_path:str):
         try:
             with open(file_path, "r") as _file:
-                if _file.endswith(".json"):
-                    return json.loads(_file.read())
-                elif _file.endswith(".ini"):
-                    return ConfigParser().read(file_path)
-                else:
-                    return _file.read()
+                _file_content = _file.read()
+                _file.close()
+                return _file_content
         except FileNotFoundError:
             print(f"There is no '{file_path}' to load.")
 
@@ -57,5 +51,5 @@ class File:
             if do_exists:
                 print(f"'{file_path}' exists.")
             else:
-                print(f"'{file_path}' does not exists") 
+                print(f"'{file_path}' does not exists")
         return do_exists
