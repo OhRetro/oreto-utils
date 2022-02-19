@@ -1,5 +1,4 @@
 #PyQt
-#0.1
 
 from PyQt5.QtWidgets import QMessageBox
 
