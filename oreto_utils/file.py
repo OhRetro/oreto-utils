@@ -2,7 +2,7 @@
 #0.1.1
 
 from os import remove as os_remove
-from os.path import osp_isfile
+from os.path import isfile as osp_isfile
 from shutil import move as sh_move
 from configparser import ConfigParser
 import json
