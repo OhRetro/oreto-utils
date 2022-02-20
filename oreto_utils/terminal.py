@@ -1,18 +1,18 @@
 #Terminal
 
-from os import name, system
-if name == "nt": import ctypes
+from os import name as os_name, system as os_system
+if os_name == "nt": import ctypes
 
 class Terminal:
     #Clear the terminal
     def clear():
-        if name == "nt": system("cls")
-        else: system("clear")
+        if os_name == "nt": os_system("cls")
+        else: os_system("clear")
         
     #Set title of the terminal
     def title(title:str):
-        if name == "nt": ctypes.windll.kernel32.SetConsoleTitleW(title)
+        if os_name == "nt": ctypes.windll.kernel32.SetConsoleTitleW(title)
 
     #Execute a command
     def execute(command:str):
-        system(command)
+        os_system(command)
