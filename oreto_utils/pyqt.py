@@ -15,3 +15,8 @@ class PyQt:
         else:   
             display.exec_()
             return
+        
+    #Set Text
+    def set_text(gui,**gui_element):
+        for _ in gui_element:  
+            getattr(gui, _).setText(gui_element[_])
