@@ -5,51 +5,47 @@ from os.path import isfile as osp_isfile
 from shutil import move as sh_move
 
 class File:
-    #Load/Read file
-    def load(file_path:str):
-        try:
-            with open(file_path, "r") as _file:
-                _file_content = _file.read()
-                _file.close()
-                return _file_content
-        except FileNotFoundError:
-            print(f"There is no '{file_path}' to load.")
+    def __init__(self, file_name="file.txt", file_path="./"):
+        self.file_name = file_name
+        self.file_path = file_path
+        self.file = file_path+file_name
+    
+    #Read file
+    def read(self):
+        if not self.exists():
+            return
+        
+        with open(f"{self.file}", "r") as f:
+            f_content = f.read()
+            f.close()
+            return f_content
+            
+    #Write file
+    def write(self, file_content=""):
+        with open(f"{self.file}", "w") as f:
+            f.write(file_content)
+            f.close()
+            
+    #Delete file
+    def delete(self):
+        if not self.exists():
+            return
 
-    #Create/Write file
-    def create(file_path:str, file_content:str=""):
-        try:
-            with open(f"{file_path}", "x") as _file:
-                _file.write(file_content)
-                _file.close()
-        except FileExistsError:
-            print(f"'{file_path}' already exists")
-            
-    #Overwrite file
-    def overwrite(file_path:str, file_content:str=""):
-        try:
-            with open(f"{file_path}", "w") as _file:
-                _file.write(file_content)
-                _file.close()
-        except FileNotFoundError:
-            print(f"There is no '{file_path}' to overwrite.")
-            
-    #Delete/Remove file
-    def delete(file_path:str):
-        try:
-            os_remove(f"{file_path}")
-        except FileNotFoundError:
-            print(f"There is no '{file_path}' to delete.") 
+        os_remove(f"{self.file}")
 
     #Move file
-    def move(file_path:str, new_file_path:str):
-        sh_move(file_path, new_file_path)
+    def move(self, path_destiny:str):
+        if not self.exists():
+            return
+
+        sh_move(f"{self.file}", path_destiny)
         
     #Exists file
-    def exists(file_path:str, print_output:bool=False):
-        do_exists = osp_isfile(file_path)
+    def exists(self, print_output:bool=False):
+        do_exists = osp_isfile(f"{self.file}")
         if print_output:
             if do_exists:
-                print(f"'{file_path}' exists.")
+                print(f"{self.file} exists.")
             else:
-                print(f"'{file_path}' does not exists")
+                print(f"{self.file} does not exists")
         return do_exists
