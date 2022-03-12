@@ -5,15 +5,35 @@ from os.path import isfile as osp_isfile
 from shutil import move as sh_move
 
 class File:
-    def __init__(self, file_name="file.txt", file_path="./"):
+    def __init__(self, file_name="file", file_ext=".txt", file_path="./"):
         self.file_name = file_name
+        
+        #Check if the file path ends with "/"
+        if not file_path.endswith("/"):
+            file_path = f"{file_path}/"
         self.file_path = file_path
-        self.file = file_path+file_name
+
+        #Check if the file extension starts with "."
+        if not file_ext.startswith("."):
+            file_ext = f".{file_ext}"
+        self.file_ext = file_ext
+        
+        self.file = self.file_path+self.file_name+self.file_ext
     
+    #Update File Properties
+    def update_properties(self):
+        if not self.file_path.endswith("/"):
+            self.file_path = f"{self.file_path}/"
+
+        if not self.file_ext.startswith("."):
+            self.file_ext = f".{self.file_ext}"
+
+        self.file = self.file_path+self.file_name+self.file_ext
+        
     #Read file
     def read(self):
         if not self.exists():
-            return
+            raise FileNotFoundError
         
         with open(f"{self.file}", "r") as f:
             f_content = f.read()
@@ -36,7 +56,7 @@ class File:
     #Move file
     def move(self, path_destiny:str):
         if not self.exists():
-            return
+            raise FileNotFoundError
 
         sh_move(f"{self.file}", path_destiny)
         
