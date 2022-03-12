@@ -14,7 +14,7 @@ class File:
         self.file_path = file_path
 
         #Check if the file extension starts with "."
-        if not file_ext.startswith("."):
+        if not file_ext.startswith(".") and file_ext != "":
             file_ext = f".{file_ext}"
         self.file_ext = file_ext
         
@@ -25,7 +25,7 @@ class File:
         if not self.file_path.endswith("/"):
             self.file_path = f"{self.file_path}/"
 
-        if not self.file_ext.startswith("."):
+        if not self.file_ext.startswith(".") and self.file_ext != "":
             self.file_ext = f".{self.file_ext}"
 
         self.file = self.file_path+self.file_name+self.file_ext
