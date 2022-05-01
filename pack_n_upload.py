@@ -7,9 +7,8 @@ from shutil import rmtree
 
 _to_delete = ["build", "dist", "oreto_utils.egg-info"]
 
-
 def pack():
-    system("python3 setup.py sdist bdist_wheel")
+    system("python setup.py sdist bdist")
     
 def upload():
     system("twine upload dist/*")
