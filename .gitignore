@@ -163,3 +163,5 @@ cython_debug/
 
 #It's for something
 credentials
+*.json
+json_utils.py

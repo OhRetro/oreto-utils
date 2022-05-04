@@ -10,7 +10,7 @@ except Exception:
 
 setuptools.setup(
     name = "oreto-utils",
-    version = "0.5",
+    version = "0.6",
     author = "OhRetro",
     author_email = "notarealemail@email.com",
     description = "a bunch of utilities to use in my code without copying and pasting the function from code to code",
