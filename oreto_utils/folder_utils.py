@@ -95,67 +95,7 @@ class Folder:
 
         for content in contents:
             sh_move(f"{self.folder}/{content}", f"{destiny}/{content}")
-            
-    #It will list all the contents of the folder
-    def list(self):
-        if not self.exists():
-            raise FileNotFoundError
 
-        return os_listdir(f"{self.folder}")
-        
-    #It will count all the contents inside the folder
-    def count(self):
-        if not self.exists():
-            raise FileNotFoundError
-
-        return sum(1 for _ in self.list())
-    
-    #A dialog to select a folder will appear after that it will setup and separate the parent folder and folder name 
-    def select(self):
-        root = Tk()
-        root.withdraw()
-        selected_folder = filedialog.askdirectory()
-        
-        if selected_folder == "":
-            return False
-      
-        self.folder_name = selected_folder.split("/")[-1]
-        self.parent_folder = "/".join(selected_folder.split("/")[:-1])+"/"
-        self.update()
-        root.destroy()
-        return True
-        
-    #It will get the folder total size and format it with the correct unit
-    def size(self, return_type:str="str"):
-        if not self.exists():
-            raise FileNotFoundError
-
-        size = 0
-        for path, dirs, files in os_walk(self.folder):
-            for f in files:
-                fp = osp_join(path, f)
-                size += osp_getsize(fp)
-
-        valid = ["str", "int"]
-        if return_type not in valid:
-            return_type = "str"
-
-        if return_type == "int":
-            return size
-        elif return_type == "str":
-            if size < 1024:
-                return f"{size}Bytes"
-            elif size < 1024**2:
-                return f"{size/1024:.2f}KB"
-            elif size < 1024**3:
-                return f"{size/1024**2:.2f}MB"
-            elif size < 1024**4:
-                return f"{size/1024**3:.2f}GB"
-            elif size < 1024**5:
-                return f"{size/1024**4:.2f}TB"
-            else:
-                return f"{size/1024**5:.2f}PB"
-            
     #It will copy the folder to the destiny
     def copy(self, path_destiny:str):
         if not self.exists():
@@ -181,4 +121,67 @@ class Folder:
                 contents.remove(ex)
 
         for content in contents:
-            sh_copytree(f"{self.folder}/{content}", f"{path_destiny}/{content}")
+            sh_copytree(f"{self.folder}/{content}", f"{path_destiny}/{content}")      
+    #It will list all the contents of the folder
+    def list(self):
+        if not self.exists():
+            raise FileNotFoundError
+
+        return os_listdir(f"{self.folder}")
+        
+    #It will count all the contents inside the folder
+    def count(self):
+        if not self.exists():
+            raise FileNotFoundError
+
+        return sum(1 for _ in self.list())
+    
+    #A dialog to select a folder will appear after that it will setup and separate the parent folder and folder name 
+    def select(self):
+        root = Tk()
+        root.withdraw()
+        selected_folder = filedialog.askdirectory()
+        
+        if selected_folder == "":
+            return None
+      
+        self.folder_name = selected_folder.split("/")[-1]
+        self.parent_folder = "/".join(selected_folder.split("/")[:-1])+"/"
+        self.update()
+        root.destroy()
+        return True
+        
+    #It will get the folder total size and format it with the correct unit
+    def size(self, return_type:str="str"):
+        if not self.exists():
+            raise FileNotFoundError
+
+        size = 0
+        for path, dirs, files in os_walk(self.folder):
+            for f in files:
+                fp = osp_join(path, f)
+                size += osp_getsize(fp)
+
+        valid = ["str", "int"]
+        format_unit = ["Bytes", "KB", "MB", "GB", "TB", "PB"]
+        selected_unit = None
+        
+        if return_type not in valid:
+            return_type = "str"
+        if return_type == "int":
+            return size
+        elif return_type == "str":
+            if size < 1024:
+                selected_unit = 0
+            elif size < 1024**2:
+                selected_unit = 1
+            elif size < 1024**3:
+                selected_unit = 2
+            elif size < 1024**4:
+                selected_unit = 3
+            elif size < 1024**5:
+                selected_unit = 4
+            else:
+                selected_unit = 5
+                
+            return f"{size/1024**selected_unit:.2f} {format_unit[selected_unit]}"

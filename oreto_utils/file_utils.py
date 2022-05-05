@@ -4,7 +4,6 @@ from os import remove as os_remove, rename as os_rename
 from os.path import isfile as osp_isfile, getsize as osp_getsize, isdir as osp_isdir
 from shutil import move as sh_move, copy as sh_copy
 from tkinter import Tk, filedialog
-from requests import get as req_get 
 
 class File:
     def __init__(self, file_name="file", file_ext=".txt", file_path="./"):
@@ -39,7 +38,7 @@ class File:
     #It will return the file content
     def read(self):
         if not self.exists():
-            raise FileNotFoundError
+            raise FileNotFoundError("There is no such file to read.")
         
         with open(f"{self.file}", "r") as f:
             f_content = f.read()
@@ -55,20 +54,30 @@ class File:
     #It will delete the file
     def delete(self):
         if not self.exists():
-            raise FileNotFoundError
+            raise FileNotFoundError("There is no such file to delete.")
 
         os_remove(f"{self.file}")
 
     #It will move the file to the destiny path
     def move(self, path_destiny:str):
         if not self.exists():
-            raise FileNotFoundError
+            raise FileNotFoundError("There is no such file to move.")
 
         old_path = self.file
         self.file_path = path_destiny
         self.update()
 
         sh_move(old_path, path_destiny)
+        
+    #It will copy the file to the destiny path
+    def copy(self, path_destiny:str):
+        if not self.exists():
+            raise FileNotFoundError("There is no such file to copy.")
+
+        if not osp_isdir(path_destiny):
+            raise NotADirectoryError("There is no such directory to copy the file into.")
+        
+        sh_copy(self.file, path_destiny)
         
     #It will return True if the file exists
     def exists(self):
@@ -81,7 +90,7 @@ class File:
         selected_file = filedialog.askopenfilename()
         
         if selected_file == "":
-            return False
+            return None
         
         self.file_name = selected_file.split("/")[-1].split(".")[0]
         self.file_ext = selected_file.split("/")[-1].split(".")[-1]
@@ -89,59 +98,34 @@ class File:
         self.update()
         root.destroy()
         return True
-        
+    
     #It will get the file total size and format it with the correct unit
     def size(self, return_type:str="str"):
         if not self.exists():
-            raise FileNotFoundError
+            raise FileNotFoundError("There is no such file to get the size.")
 
         size = osp_getsize(self.file)
+
         valid = ["str", "int"]
+        format_unit = ["Bytes", "KB", "MB", "GB", "TB", "PB"]
+        selected_unit = None
+        
         if return_type not in valid:
             return_type = "str"
-
         if return_type == "int":
             return size
         elif return_type == "str":
             if size < 1024:
-                return f"{size}Bytes"
+                selected_unit = 0
             elif size < 1024**2:
-                return f"{size/1024:.2f}KB"
+                selected_unit = 1
             elif size < 1024**3:
-                return f"{size/1024**2:.2f}MB"
+                selected_unit = 2
             elif size < 1024**4:
-                return f"{size/1024**3:.2f}GB"
+                selected_unit = 3
             elif size < 1024**5:
-                return f"{size/1024**4:.2f}TB"
+                selected_unit = 4
             else:
-                return f"{size/1024**5:.2f}PB"
-            
-    #It will copy the file to the destiny path
-    def copy(self, path_destiny:str):
-        if not self.exists():
-            raise FileNotFoundError
-
-        if not osp_isdir(path_destiny):
-            raise NotADirectoryError
-        
-        sh_copy(self.file, path_destiny)
-        
-    def download(self, url:str, save_as:str=None):
-        if self.exists():
-            raise FileExistsError
-
-        if save_as != None:
-            if "." in save_as:
-                self.file_ext = save_as.split(".")[-1]
-                self.file_name = save_as.split(".")[0]
-            else:
-                self.file_name = save_as
-            self.update()
-
-        if req_get(url).status_code != 200:
-            return False
-
-        with open(f"{self.file}", "wb") as f:
-            f.write(req_get(url).content)
-            f.close()
-            return True	
+                selected_unit = 5
+                
+            return f"{size/1024**selected_unit:.2f} {format_unit[selected_unit]}"
