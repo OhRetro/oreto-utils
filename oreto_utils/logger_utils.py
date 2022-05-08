@@ -9,9 +9,9 @@ class Logger:
         self.log_level = log_level
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
-        self.logger.addHandler(self.get_handler())
+        self.logger.addHandler(self.gethandler())
 
-    def get_handler(self):
+    def gethandler(self):
         handler = logging.FileHandler(self.log_file_name)
         handler.setLevel(self.log_level)
         handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))

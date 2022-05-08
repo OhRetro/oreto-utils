@@ -6,9 +6,10 @@ from shutil import rmtree as sh_rmtree, move as sh_move, copytree as sh_copytree
 from tkinter import Tk, filedialog
 
 class Folder:
-    def __init__(self, folder_name="folder", parent_folder="./"):
+    def __init__(self, folder_name, parent_folder="./"):
         self.folder_name = folder_name
         self.parent_folder = parent_folder
+        self.attrs = {}
         self.update()        
 
     #It will update the parent folder and folder name
@@ -22,6 +23,13 @@ class Folder:
             self.parent_folder = f"{self.parent_folder}/"
         
         self.folder = self.parent_folder+self.folder_name
+
+        self.attrs["NAME"] = self.folder_name
+        self.attrs["PARENT"] = self.parent_folder
+        self.attrs["FOLDER"] = self.folder
+        
+    def getattr(self, attr_name:str="ALL"):
+        return self.attrs if attr_name in {"ALL", ""} else self.attrs[attr_name]
 
     #It will rename the folder name
     def rename(self, new_folder_name):
@@ -49,7 +57,7 @@ class Folder:
         sh_rmtree(f"{self.folder}")
 
     #It will delete all the contents of the folder and will check if a folder or a file
-    def delete_contents(self, exception:list=None):
+    def deletecontents(self, exception:list=None):
         if not self.exists():
             raise FileNotFoundError
 
@@ -80,7 +88,7 @@ class Folder:
         sh_move(old_parent, path_destiny)
     
     #It will move the contents of the folder into another folder
-    def move_contents(self, destiny:str, exception:list=None):
+    def movecontents(self, destiny:str, exception:list=None):
         if not self.exists():
             raise FileNotFoundError
 
@@ -107,7 +115,7 @@ class Folder:
         sh_copytree(self.folder, path_destiny)
         
     #It will copy the contents of the folder to the destiny
-    def copy_contents(self, path_destiny:str, exception:list=None):
+    def copycontents(self, path_destiny:str, exception:list=None):
         if not self.exists():
             raise FileNotFoundError
 
@@ -151,8 +159,8 @@ class Folder:
         root.destroy()
         return True
         
-    #It will get the folder total size and format it with the correct unit
-    def size(self, return_type:str="str"):
+    #It will get the folder total size and return it in bytes
+    def size(self):
         if not self.exists():
             raise FileNotFoundError
 
@@ -161,27 +169,5 @@ class Folder:
             for f in files:
                 fp = osp_join(path, f)
                 size += osp_getsize(fp)
-
-        valid = ["str", "int"]
-        format_unit = ["Bytes", "KB", "MB", "GB", "TB", "PB"]
-        selected_unit = None
-        
-        if return_type not in valid:
-            return_type = "str"
-        if return_type == "int":
-            return size
-        elif return_type == "str":
-            if size < 1024:
-                selected_unit = 0
-            elif size < 1024**2:
-                selected_unit = 1
-            elif size < 1024**3:
-                selected_unit = 2
-            elif size < 1024**4:
-                selected_unit = 3
-            elif size < 1024**5:
-                selected_unit = 4
-            else:
-                selected_unit = 5
                 
-            return f"{size/1024**selected_unit:.2f} {format_unit[selected_unit]}"
+        return size

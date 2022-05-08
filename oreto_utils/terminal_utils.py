@@ -11,7 +11,7 @@ class Terminal:
         else: os_system("clear")
     
     #Clear the previous lines or the last line
-    def clear_lines(lines:int=1):
+    def clearlines(lines:int=1):
         for _ in range(lines):
             if os_name == "nt":
                 sys.stdout.write('\x1b[1A')

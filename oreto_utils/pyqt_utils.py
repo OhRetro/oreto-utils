@@ -31,7 +31,7 @@ class PyQt:
         NoToAll = QMessageBox.NoToAll
     
     #Display Message
-    def display_message(title:str, message:str, informative_message:str=None, detailed_message:str=None, icon=None, buttons=None):
+    def displaymessage(title:str, message:str, informative_message:str=None, detailed_message:str=None, icon=None, buttons=None):
         display = QMessageBox()
         display.setWindowTitle(title)
         display.setText(message)
@@ -47,6 +47,6 @@ class PyQt:
             return
         
     #Set Text
-    def set_text(gui,**gui_element):
+    def settext(gui,**gui_element):
         for _ in gui_element:  
             getattr(gui, _).setText(gui_element[_])

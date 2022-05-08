@@ -1,15 +1,16 @@
 #File
 
 from os import remove as os_remove, rename as os_rename
-from os.path import isfile as osp_isfile, getsize as osp_getsize, isdir as osp_isdir
+from os.path import isfile as osp_isfile, getsize as osp_getsize, isdir as osp_isdir, abspath as osp_abspath
 from shutil import move as sh_move, copy as sh_copy
 from tkinter import Tk, filedialog
 
 class File:
-    def __init__(self, file_name="file", file_ext=".txt", file_path="./"):
+    def __init__(self, file_name, file_ext, file_path="./"):
         self.file_name = file_name
         self.file_path = file_path
         self.file_ext = file_ext
+        self.attrs = {}
         self.update()
         
     #It will update the file path, file name and file extension
@@ -17,6 +18,7 @@ class File:
         #Check if the file path have "\" to replace with "/"        
         if "\\" in self.file_path:
             self.file_path = self.file_path.replace("\\", "/")
+        
         
         #Check if the file path ends with "/"
         if not self.file_path.endswith("/"):
@@ -27,6 +29,17 @@ class File:
             self.file_ext = f".{self.file_ext}"
 
         self.file = self.file_path+self.file_name+self.file_ext
+        self.file_full_path = osp_abspath(self.file).replace("\\", "/")
+        
+        self.attrs["NAME"] = self.file_name
+        self.attrs["EXT"] = self.file_ext
+        self.attrs["FILE"] = self.file
+        self.attrs["FILE_EXT"] = self.file_name+self.file_ext
+        self.attrs["PATH"] = self.file_path
+        self.attrs["FULL_PATH"] = self.file_full_path
+        
+    def getattr(self, attr_name:str="ALL"):
+        return self.attrs if attr_name in {"ALL", ""} else self.attrs[attr_name]
         
     #It will rename the file name
     def rename(self, new_file_name):
@@ -99,33 +112,9 @@ class File:
         root.destroy()
         return True
     
-    #It will get the file total size and format it with the correct unit
-    def size(self, return_type:str="str"):
+    #It will get the file total size return it in bytes
+    def size(self):
         if not self.exists():
             raise FileNotFoundError("There is no such file to get the size.")
 
-        size = osp_getsize(self.file)
-
-        valid = ["str", "int"]
-        format_unit = ["Bytes", "KB", "MB", "GB", "TB", "PB"]
-        selected_unit = None
-        
-        if return_type not in valid:
-            return_type = "str"
-        if return_type == "int":
-            return size
-        elif return_type == "str":
-            if size < 1024:
-                selected_unit = 0
-            elif size < 1024**2:
-                selected_unit = 1
-            elif size < 1024**3:
-                selected_unit = 2
-            elif size < 1024**4:
-                selected_unit = 3
-            elif size < 1024**5:
-                selected_unit = 4
-            else:
-                selected_unit = 5
-                
-            return f"{size/1024**selected_unit:.2f} {format_unit[selected_unit]}"
+        return osp_getsize(self.file)
