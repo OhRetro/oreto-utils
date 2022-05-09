@@ -1,4 +1,4 @@
-#Folder
+#Folder(s)
 
 from os.path import isdir as osp_isdir, getsize as osp_getsize, join as osp_join
 from os import mkdir as os_mkdir, listdir as os_listdir, remove as os_remove, walk as os_walk, rename as os_rename
@@ -145,13 +145,13 @@ class Folder:
         return sum(1 for _ in self.list())
     
     #A dialog to select a folder will appear after that it will setup and separate the parent folder and folder name 
-    def select(self):
+    def select(self, title:str="Select a folder", initialdir:str=None, mustexist:bool=False):
         root = Tk()
         root.withdraw()
-        selected_folder = filedialog.askdirectory()
+        selected_folder = filedialog.askdirectory(title=title, initialdir=initialdir, mustexist=mustexist)
         
         if selected_folder == "":
-            return None
+            return False
       
         self.folder_name = selected_folder.split("/")[-1]
         self.parent_folder = "/".join(selected_folder.split("/")[:-1])+"/"
@@ -171,3 +171,15 @@ class Folder:
                 size += osp_getsize(fp)
                 
         return size
+    
+class Folders:
+    def select(self, title:str="Select a folder", initialdir:str=None, mustexist:bool=True):
+        root = Tk()
+        root.withdraw()
+        selected_folder = filedialog.askdirectory(title=title, initialdir=initialdir, mustexist=mustexist)
+        
+        if selected_folder == "":
+            return False
+      
+        root.destroy()
+        return selected_folder

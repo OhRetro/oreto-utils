@@ -1,4 +1,4 @@
-#File
+#File(s)
 
 from os import remove as os_remove, rename as os_rename
 from os.path import isfile as osp_isfile, getsize as osp_getsize, isdir as osp_isdir, abspath as osp_abspath
@@ -18,7 +18,6 @@ class File:
         #Check if the file path have "\" to replace with "/"        
         if "\\" in self.file_path:
             self.file_path = self.file_path.replace("\\", "/")
-        
         
         #Check if the file path ends with "/"
         if not self.file_path.endswith("/"):
@@ -97,24 +96,40 @@ class File:
         return osp_isfile(f"{self.file}")
     
     #A dialog to select a file will appear after that it will setup and separate the file path, the file name and file extension 
-    def select(self):
+    def select(self, title:str="Select a file", initialdir:str=None, filetypes:list=None):
+        if filetypes is None:
+            filetypes = [("All Files (*.*)", "*.*")]
         root = Tk()
         root.withdraw()
-        selected_file = filedialog.askopenfilename()
-        
+        selected_file = filedialog.askopenfilename(title=title, initialdir=initialdir, filetypes=filetypes)
+
         if selected_file == "":
-            return None
-        
+            return False, None
+
         self.file_name = selected_file.split("/")[-1].split(".")[0]
         self.file_ext = selected_file.split("/")[-1].split(".")[-1]
         self.file_path = "/".join(selected_file.split("/")[:-1])+"/"
         self.update()
         root.destroy()
         return True
-    
+            
     #It will get the file total size return it in bytes
     def size(self):
         if not self.exists():
             raise FileNotFoundError("There is no such file to get the size.")
 
         return osp_getsize(self.file)
+    
+class Files:
+    def select(self, title:str="Select a file", initialdir:str=None, filetypes:list=None, multiple:bool=True):
+        if filetypes is None:
+            filetypes = [("All Files (*.*)", "*.*")]
+        root = Tk()
+        root.withdraw()
+        selected_file = filedialog.askopenfilename(title=title, initialdir=initialdir, filetypes=filetypes, multiple=multiple)
+
+        if selected_file == "":
+            return False
+        
+        root.destroy()
+        return selected_file
