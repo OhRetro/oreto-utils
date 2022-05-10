@@ -151,7 +151,7 @@ class Folder:
         selected_folder = filedialog.askdirectory(title=title, initialdir=initialdir, mustexist=mustexist)
         
         if selected_folder == "":
-            return False
+            return None
       
         self.folder_name = selected_folder.split("/")[-1]
         self.parent_folder = "/".join(selected_folder.split("/")[:-1])+"/"
@@ -173,13 +173,13 @@ class Folder:
         return size
     
 class Folders:
-    def select(self, title:str="Select a folder", initialdir:str=None, mustexist:bool=True):
+    def select(title:str="Select a folder", initialdir:str=None, mustexist:bool=True):
         root = Tk()
         root.withdraw()
         selected_folder = filedialog.askdirectory(title=title, initialdir=initialdir, mustexist=mustexist)
         
         if selected_folder == "":
-            return False
+            return None
       
         root.destroy()
         return selected_folder

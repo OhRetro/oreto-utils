@@ -104,7 +104,7 @@ class File:
         selected_file = filedialog.askopenfilename(title=title, initialdir=initialdir, filetypes=filetypes)
 
         if selected_file == "":
-            return False, None
+            return None
 
         self.file_name = selected_file.split("/")[-1].split(".")[0]
         self.file_ext = selected_file.split("/")[-1].split(".")[-1]
@@ -121,15 +121,17 @@ class File:
         return osp_getsize(self.file)
     
 class Files:
-    def select(self, title:str="Select a file", initialdir:str=None, filetypes:list=None, multiple:bool=True):
+    def select(title:str="Select a file", initialdir:str=None, filetypes:list=None, multiple:bool=True):
         if filetypes is None:
             filetypes = [("All Files (*.*)", "*.*")]
         root = Tk()
         root.withdraw()
         selected_file = filedialog.askopenfilename(title=title, initialdir=initialdir, filetypes=filetypes, multiple=multiple)
-
-        if selected_file == "":
-            return False
         
+        if selected_file == "":
+            return None
+
         root.destroy()
         return selected_file
+    
+Files.select(multiple=True)
