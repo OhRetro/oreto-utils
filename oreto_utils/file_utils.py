@@ -133,5 +133,3 @@ class Files:
 
         root.destroy()
         return selected_file
-    
-Files.select(multiple=True)
