@@ -1,7 +1,7 @@
 __title__ = "oreto-utils"
 __author__ = "OhRetro"
 __license__ = "MIT"
-__version__ = "0.6.2"
+__version__ = "0.6.3"
 
 from .pyqt_utils import *
 from .terminal_utils import *

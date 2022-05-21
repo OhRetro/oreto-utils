@@ -1,8 +1,8 @@
 #Folder(s)
 
-from os.path import isdir as osp_isdir, getsize as osp_getsize, join as osp_join
+from os.path import isdir as osp_isdir, getsize as osp_getsize, join as osp_join, isfile as osp_isfile
 from os import mkdir as os_mkdir, listdir as os_listdir, remove as os_remove, walk as os_walk, rename as os_rename
-from shutil import rmtree as sh_rmtree, move as sh_move, copytree as sh_copytree
+from shutil import rmtree as sh_rmtree, move as sh_move, copytree as sh_copytree, copyfile as sh_copyfile
 from tkinter import Tk, filedialog
 
 class Folder:
@@ -13,7 +13,7 @@ class Folder:
         self.update()        
 
     #It will update the parent folder and folder name
-    def update(self):
+    def update(self) -> None:
         #Check if the parent folder have "\" to replace with "/"
         if "\\" in self.parent_folder:
             self.parent_folder = self.parent_folder.replace("\\", "/")
@@ -28,36 +28,36 @@ class Folder:
         self.attrs["PARENT"] = self.parent_folder
         self.attrs["FOLDER"] = self.folder
         
-    def getattr(self, attr_name:str="ALL"):
+    def getattr(self, attr_name:str="ALL") -> dict:
         return self.attrs if attr_name in {"ALL", ""} else self.attrs[attr_name]
 
     #It will rename the folder name
-    def rename(self, new_folder_name):
+    def rename(self, new_folder_name) -> None:
         old_folder = self.folder
         self.folder_name = new_folder_name
         self.update()
         os_rename(old_folder, self.folder)
 
     #It will return True if the folder exists
-    def exists(self):
+    def exists(self) -> bool:
         return osp_isdir(f"{self.folder}")
     
     #It will create the folder
-    def create(self):
+    def create(self) -> None:
         if self.exists():
             raise FileExistsError
         
         os_mkdir(f"{self.folder}")
         
     #It will delete the folder
-    def delete(self):
+    def delete(self) -> None:
         if not self.exists():
             raise FileNotFoundError
         
         sh_rmtree(f"{self.folder}")
 
     #It will delete all the contents of the folder and will check if a folder or a file
-    def deletecontents(self, exception:list=None):
+    def deletecontents(self, exception:list=None) -> None:
         if not self.exists():
             raise FileNotFoundError
 
@@ -73,11 +73,11 @@ class Folder:
         for content in contents:
             if osp_isdir(f"{self.folder}/{content}"):
                 sh_rmtree(f"{self.folder}/{content}")
-            else:
+            elif osp_isfile(f"{self.folder}/{content}"):
                 os_remove(f"{self.folder}/{content}")
                                 
     #It will move the folder
-    def move(self, path_destiny:str):
+    def move(self, path_destiny:str) -> None:
         if not self.exists():
             raise FileNotFoundError
 
@@ -88,7 +88,7 @@ class Folder:
         sh_move(old_parent, path_destiny)
     
     #It will move the contents of the folder into another folder
-    def movecontents(self, destiny:str, exception:list=None):
+    def movecontents(self, destiny:str, exception:list=None) -> None:
         if not self.exists():
             raise FileNotFoundError
 
@@ -103,9 +103,9 @@ class Folder:
 
         for content in contents:
             sh_move(f"{self.folder}/{content}", f"{destiny}/{content}")
-
+            
     #It will copy the folder to the destiny
-    def copy(self, path_destiny:str):
+    def copy(self, path_destiny:str) -> None:
         if not self.exists():
             raise FileNotFoundError
 
@@ -114,8 +114,8 @@ class Folder:
 
         sh_copytree(self.folder, path_destiny)
         
-    #It will copy the contents of the folder to the destiny
-    def copycontents(self, path_destiny:str, exception:list=None):
+    #It will copy the contents of the folder to the destiny and will check if a folder or a file
+    def copycontents(self, path_destiny:str, exception:list=None) -> None:
         if not self.exists():
             raise FileNotFoundError
 
@@ -129,23 +129,27 @@ class Folder:
                 contents.remove(ex)
 
         for content in contents:
-            sh_copytree(f"{self.folder}/{content}", f"{path_destiny}/{content}")      
+            if osp_isdir(f"{self.folder}/{content}"):
+                sh_copytree(f"{self.folder}/{content}", f"{path_destiny}/{content}")
+            elif osp_isfile(f"{self.folder}/{content}"):
+                sh_copyfile(f"{self.folder}/{content}", f"{path_destiny}/{content}")
+                  
     #It will list all the contents of the folder
-    def list(self):
+    def list(self) -> list:
         if not self.exists():
             raise FileNotFoundError
 
         return os_listdir(f"{self.folder}")
         
     #It will count all the contents inside the folder
-    def count(self):
+    def count(self) -> int:
         if not self.exists():
             raise FileNotFoundError
 
         return sum(1 for _ in self.list())
     
     #A dialog to select a folder will appear after that it will setup and separate the parent folder and folder name 
-    def select(self, title:str="Select a folder", initialdir:str=None, mustexist:bool=False):
+    def select(self, title:str="Select a folder", initialdir:str=None, mustexist:bool=False) -> None:
         root = Tk()
         root.withdraw()
         selected_folder = filedialog.askdirectory(title=title, initialdir=initialdir, mustexist=mustexist)
@@ -160,7 +164,7 @@ class Folder:
         return True
         
     #It will get the folder total size and return it in bytes
-    def size(self):
+    def size(self) -> int:
         if not self.exists():
             raise FileNotFoundError
 
@@ -173,7 +177,7 @@ class Folder:
         return size
     
 class Folders:
-    def select(title:str="Select a folder", initialdir:str=None, mustexist:bool=True):
+    def select(title:str="Select a folder", initialdir:str=None, mustexist:bool=True) -> list:
         root = Tk()
         root.withdraw()
         selected_folder = filedialog.askdirectory(title=title, initialdir=initialdir, mustexist=mustexist)

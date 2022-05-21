@@ -44,7 +44,6 @@ class PyQt:
             return display.exec_()
         else:   
             display.exec_()
-            return
         
     #Set Text
     def settext(gui,**gui_element):

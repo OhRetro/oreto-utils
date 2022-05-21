@@ -1,6 +1,7 @@
+
 #File(s)
 
-from os import remove as os_remove, rename as os_rename
+from os import remove as os_remove, rename as os_rename, listdir as os_listdir
 from os.path import isfile as osp_isfile, getsize as osp_getsize, isdir as osp_isdir, abspath as osp_abspath
 from shutil import move as sh_move, copy as sh_copy
 from tkinter import Tk, filedialog
@@ -14,7 +15,7 @@ class File:
         self.update()
         
     #It will update the file path, file name and file extension
-    def update(self):
+    def update(self) -> None:
         #Check if the file path have "\" to replace with "/"        
         if "\\" in self.file_path:
             self.file_path = self.file_path.replace("\\", "/")
@@ -37,18 +38,18 @@ class File:
         self.attrs["PATH"] = self.file_path
         self.attrs["FULL_PATH"] = self.file_full_path
         
-    def getattr(self, attr_name:str="ALL"):
+    def getattr(self, attr_name:str="ALL") -> dict:
         return self.attrs if attr_name in {"ALL", ""} else self.attrs[attr_name]
         
     #It will rename the file name
-    def rename(self, new_file_name):
+    def rename(self, new_file_name) -> None:
         old_file = self.file
         self.file_name = new_file_name
         self.update()
         os_rename(old_file, self.file)
         
     #It will return the file content
-    def read(self):
+    def read(self) -> str:
         if not self.exists():
             raise FileNotFoundError("There is no such file to read.")
         
@@ -56,22 +57,36 @@ class File:
             f_content = f.read()
             f.close()
             return f_content
-                    
-    #It will write the content in the file
-    def write(self, file_content=""):
+    
+    #It will return a specified line of the file content
+    def readline(self, line_number:int) -> str:
+        if not self.exists():
+            raise FileNotFoundError("There is no such file to read.")
+
+        with open(f"{self.file}", "r") as f:
+            f_content = f.readlines()
+            f.close()
+            return f_content[line_number]
+        
+    #It will write the content in the file and can check if the file exists and if it does it will overwrite it or not
+    def write(self, file_content="", overwrite:bool=False) -> None:
+        if self.exists() and not overwrite:
+            counter = sum(1 for _ in os_listdir(self.file_path) if _.startswith(self.file_name) and _.endswith(self.file_ext))
+            self.rename(f"{self.file_name} - Copy ({counter})")
+            
         with open(f"{self.file}", "w") as f:
             f.write(file_content)
             f.close()
                     
     #It will delete the file
-    def delete(self):
+    def delete(self) -> None:
         if not self.exists():
             raise FileNotFoundError("There is no such file to delete.")
 
         os_remove(f"{self.file}")
 
     #It will move the file to the destiny path
-    def move(self, path_destiny:str):
+    def move(self, path_destiny:str) -> None:
         if not self.exists():
             raise FileNotFoundError("There is no such file to move.")
 
@@ -82,7 +97,7 @@ class File:
         sh_move(old_path, path_destiny)
         
     #It will copy the file to the destiny path
-    def copy(self, path_destiny:str):
+    def copy(self, path_destiny:str) -> None:
         if not self.exists():
             raise FileNotFoundError("There is no such file to copy.")
 
@@ -92,11 +107,11 @@ class File:
         sh_copy(self.file, path_destiny)
         
     #It will return True if the file exists
-    def exists(self):
+    def exists(self) -> bool:
         return osp_isfile(f"{self.file}")
     
     #A dialog to select a file will appear after that it will setup and separate the file path, the file name and file extension 
-    def select(self, title:str="Select a file", initialdir:str=None, filetypes:list=None):
+    def select(self, title:str="Select a file", initialdir:str=None, filetypes:list=None) -> None:
         if filetypes is None:
             filetypes = [("All Files (*.*)", "*.*")]
         root = Tk()
@@ -114,14 +129,14 @@ class File:
         return True
             
     #It will get the file total size return it in bytes
-    def size(self):
+    def size(self) -> int:
         if not self.exists():
             raise FileNotFoundError("There is no such file to get the size.")
 
         return osp_getsize(self.file)
     
 class Files:
-    def select(title:str="Select a file", initialdir:str=None, filetypes:list=None, multiple:bool=True):
+    def select(title:str="Select a file", initialdir:str=None, filetypes:list=None, multiple:bool=True) -> list:
         if filetypes is None:
             filetypes = [("All Files (*.*)", "*.*")]
         root = Tk()

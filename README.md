@@ -3,6 +3,6 @@ a bunch of utilities to use in my code without copying and pasting the function 
 
 # todo
 * [ ] add docstrings to the utilities
-* [ ] document the utilities
 * [ ] docs for the utilities
 * [ ] json utilities
+* [ ] check if it works with linux

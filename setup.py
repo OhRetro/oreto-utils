@@ -11,7 +11,7 @@ except Exception:
 
 setup(
     name = "oreto-utils",
-    version = "0.6.2",
+    version = "0.6.3",
     author = "OhRetro",
     author_email = "notareal@email.com",
     description = "a bunch of utilities to use in my code without copying and pasting the function from code to code",
@@ -29,5 +29,5 @@ setup(
     ],
     install_requires = ["PyQt5"],
     packages = find_packages(where="."),
-    python_requires = ">=3.6"
+    python_requires = ">=3.7"
 )
