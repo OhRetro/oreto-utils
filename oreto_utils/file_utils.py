@@ -1,4 +1,3 @@
-
 #File(s)
 
 from os import remove as os_remove, rename as os_rename, listdir as os_listdir
@@ -12,10 +11,10 @@ class File:
         self.file_path = file_path
         self.file_ext = file_ext
         self.attrs = {}
-        self.update()
+        self._update()
         
     #It will update the file path, file name and file extension
-    def update(self) -> None:
+    def _update(self) -> None:
         #Check if the file path have "\" to replace with "/"        
         if "\\" in self.file_path:
             self.file_path = self.file_path.replace("\\", "/")
@@ -45,7 +44,7 @@ class File:
     def rename(self, new_file_name) -> None:
         old_file = self.file
         self.file_name = new_file_name
-        self.update()
+        self._update()
         os_rename(old_file, self.file)
         
     #It will return the file content
@@ -77,6 +76,15 @@ class File:
         with open(f"{self.file}", "w") as f:
             f.write(file_content)
             f.close()
+            
+    #It will append the content to the file
+    def append(self, file_content:str) -> None:
+        if not self.exists():
+            raise FileNotFoundError("There is no such file to append.")
+
+        with open(f"{self.file}", "a") as f:
+            f.write(file_content)
+            f.close()
                     
     #It will delete the file
     def delete(self) -> None:
@@ -92,7 +100,7 @@ class File:
 
         old_path = self.file
         self.file_path = path_destiny
-        self.update()
+        self._update()
 
         sh_move(old_path, path_destiny)
         
@@ -111,23 +119,23 @@ class File:
         return osp_isfile(f"{self.file}")
     
     #A dialog to select a file will appear after that it will setup and separate the file path, the file name and file extension 
-    def select(self, title:str="Select a file", initialdir:str=None, filetypes:list=None) -> None:
+    def select(self, title:str="Select a file", initialdir:str=None, filetypes:list[tuple | list]=None) -> bool:
+        """It can return a boolean value to indicate if the file was selected or not."""
         if filetypes is None:
             filetypes = [("All Files (*.*)", "*.*")]
         root = Tk()
         root.withdraw()
         selected_file = filedialog.askopenfilename(title=title, initialdir=initialdir, filetypes=filetypes)
-
-        if selected_file == "":
-            return None
-
-        self.file_name = selected_file.split("/")[-1].split(".")[0]
-        self.file_ext = selected_file.split("/")[-1].split(".")[-1]
-        self.file_path = "/".join(selected_file.split("/")[:-1])+"/"
-        self.update()
         root.destroy()
-        return True
-            
+        if selected_file != "":
+            self.file_name = selected_file.split("/")[-1].split(".")[0]
+            self.file_ext = selected_file.split("/")[-1].split(".")[-1]
+            self.file_path = "/".join(selected_file.split("/")[:-1])+"/"
+            self._update()
+            return True
+        else:
+            return False
+                
     #It will get the file total size return it in bytes
     def size(self) -> int:
         if not self.exists():
@@ -136,15 +144,15 @@ class File:
         return osp_getsize(self.file)
     
 class Files:
-    def select(title:str="Select a file", initialdir:str=None, filetypes:list=None, multiple:bool=True) -> list:
+    def select(title:str="Select a file", initialdir:str=None, filetypes:list[tuple | list]=None, multiple:bool=True) -> (tuple | str):
+        """
+        If the multiple argument is True, it will return a tuple with the selected files even if there is one file selected.\n
+        Else, it will return a string with the selected file.
+        """
         if filetypes is None:
             filetypes = [("All Files (*.*)", "*.*")]
         root = Tk()
         root.withdraw()
         selected_file = filedialog.askopenfilename(title=title, initialdir=initialdir, filetypes=filetypes, multiple=multiple)
-        
-        if selected_file == "":
-            return None
-
         root.destroy()
         return selected_file
