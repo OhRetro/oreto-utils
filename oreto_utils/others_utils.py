@@ -1,6 +1,6 @@
 #Others
 
-from terminal_utils import Terminal
+from oreto_utils.terminal_utils import Terminal
 from time import sleep as t_sleep
 
 class Others:

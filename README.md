@@ -2,7 +2,8 @@
 a bunch of utilities to use in my code without copying and pasting the function from code to code, feel free to use it
 
 # todo
-* [ ] add docstrings to the utilities
+* [x] add docstrings to the utilities
 * [ ] docs for the utilities
-* [ ] json utilities
+* [x] json utilities
 * [ ] check if it works with linux
+* [ ] add examples usages

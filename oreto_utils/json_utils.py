@@ -1,7 +1,7 @@
 #JSON
 
 import json
-from file_utils import File
+from oreto_utils.file_utils import File
 
 class JSON:
     def __init__(self, jsonfile:str, path:str="./"):
