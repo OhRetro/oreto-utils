@@ -7,25 +7,13 @@ class Others:
     #This is a countdown
     def countdown(seconds:int, message:str="", endmessage:str="") -> None:
         """This is a countdown that will print a message every second until it reaches 0."""
-        while seconds > 0:
-            print(f"{message} {seconds}")
+        for _ in range(seconds):
+            print(f"{message}{seconds}")
             t_sleep(1)
             seconds -= 1
             Terminal.clearlines(1)
         print(endmessage)            
-    
-    #This wait for a value be equal to a certain value
-    def untilequal(value:int, be_equal:int, name:str) -> None:
-        """
-        IT MAY NOT BE IN THE NEXT VERSION.\n\n
-        Wait for a value to be equal to a certain value.\n
-        This is meant to be used for watching a value if that value is in a multiprocess action.
-        """
-        while value != be_equal:
-            print(f"Waiting for {name}: {value}/{be_equal}")
-            Terminal.clearlines()
-        print("[Done]\n")
-    
+        
     #This will format a byte size in KB, MB, GB, TB or PB 
     def formatsize(bytesize:int) -> str:
         """The size in byte will be formated in KB, MB, GB, TB or PB."""
