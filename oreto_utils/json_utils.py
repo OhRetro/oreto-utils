@@ -4,74 +4,73 @@ import json
 from oreto_utils.file_utils import File
 
 class JSON:
-    def __init__(self, jsonfile:str, path:str="./"):
-        jsonfile = jsonfile.removesuffix(".json")
-        self.json_file = File(jsonfile, ".json", path)
+    def __init__(self, jsonfile:str, path:str="./", separator:str="."):
+        self.jsonfile = File(jsonfile.removesuffix(".json"), ".json", path)
+        self.separator = separator
     
     #It will return the whole json file content
-    def read(self) -> dict:
-        return json.loads(self.json_file.read())
+    def load(self) -> dict:
+        return json.loads(self.jsonfile.read())
     
     #It will get a specified key from the json file
     def getkey(self, key:str) -> any:
-        if "." not in key:
-            return self.read()[key]
+        if self.separator not in key:
+            return self.load()[key]
 
-        _extrakeys = key.split(".")
-        _key = self.read()[_extrakeys[0]]
+        _extrakeys = key.split(self.separator)
+        _key = self.load()[_extrakeys[0]]
         del _extrakeys[0]
         try:
-            for extra in _extrakeys:
-                _currentkey = extra
-                _key = _key[extra]
+            for _extrakey in _extrakeys:
+                _currentkey = _extrakey
+                _key = _key[_extrakey]
         except KeyError as e:
             raise KeyError(f"The key \"{_currentkey}\" does not exist") from e
 
         return _key
     
     #It will set a specified key in the json file
-    def setkey(self, key:str, value:any, overwrite:bool=False) -> None:
-        json_dict = self.read()
+    def setkey(self, key:str, value:any) -> None:
+        json_dict = self.load()
 
-        if "." not in key:
+        if self.separator not in key:
             json_dict[key] = value
         else:
-            _extrakeys = key.split(".")
+            _extrakeys = key.split(self.separator)
+            if not self.existskey(_extrakeys[0]):
+                json_dict[_extrakeys[0]] = {}
+
             _key = json_dict[_extrakeys[0]]
             del _extrakeys[0]
 
-            pos = -1
-            while True:
-                if _extrakeys[pos] == _extrakeys[-1]:
-                    _key[_extrakeys[pos]] = value
+            for _extrakey in _extrakeys:
+                if _extrakey == _extrakeys[-1]:
+                    _key[_extrakey] = value
                     break
-                
-                _key = _key[_extrakeys[pos]]
-                pos += 1
 
-        self.json_file.write(json.dumps(json_dict), True)
+                _key = _key[_extrakey]           
+
+        self.jsonfile.write(json.dumps(json_dict), True)
     
     #It will delete a specified key from the json file
     def delkey(self, key:str) -> None:
-        json_dict = self.read()
+        json_dict = self.load()
 
-        if "." not in key:
+        if self.separator not in key:
             del json_dict[key]
         else:
-            _extrakeys = key.split(".")
+            _extrakeys = key.split(self.separator)
             _key = json_dict[_extrakeys[0]]
             del _extrakeys[0]
 
-            pos = -1
-            while True:
-                if _extrakeys[pos] == _extrakeys[-1]:
-                    del _key[_extrakeys[pos]]
+            for _extrakey in _extrakeys:
+                if _extrakey == _extrakeys[-1]:
+                    del _key[_extrakey]
                     break
                 
-                _key = _key[_extrakeys[pos]]
-                pos += 1
+                _key = _key[_extrakey]
 
-        self.json_file.write(json.dumps(json_dict), True)
+        self.jsonfile.write(json.dumps(json_dict), True)
 
     #It will check if the key exists in the json file
     def existskey(self, key:str) -> bool:
@@ -80,3 +79,7 @@ class JSON:
                 return True
         except KeyError:
             return False
+    
+    #It will get the key type from the json file
+    def keytype(self, key:str) -> str:
+        return type(self.getkey(key))
