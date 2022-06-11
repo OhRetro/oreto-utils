@@ -5,6 +5,8 @@ from os import mkdir as os_mkdir, listdir as os_listdir, remove as os_remove, wa
 from shutil import rmtree as sh_rmtree, move as sh_move, copytree as sh_copytree, copyfile as sh_copyfile
 from tkinter import Tk, filedialog
 
+__all__ = ["Folder", "Folders"]
+
 class Folder:
     def __init__(self, folder_name, parent_folder="./"):
         self.folder_name = folder_name

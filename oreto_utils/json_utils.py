@@ -3,6 +3,8 @@
 import json
 from oreto_utils.file_utils import File
 
+__all__ = ["JSON"]
+
 class JSON:
     def __init__(self, jsonfile:str, path:str="./", separator:str="."):
         self.jsonfile = File(jsonfile.removesuffix(".json"), ".json", path)

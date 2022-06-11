@@ -5,6 +5,8 @@ from os.path import isfile as osp_isfile, getsize as osp_getsize, isdir as osp_i
 from shutil import move as sh_move, copy as sh_copy
 from tkinter import Tk, filedialog
 
+__all__ = ["File", "Files"]
+
 class File:
     def __init__(self, file_name, file_ext, file_path="./"):
         self.file_name = file_name
@@ -142,7 +144,7 @@ class File:
             raise FileNotFoundError("There is no such file to get the size.")
 
         return osp_getsize(self.file)
-    
+        
 class Files:
     def select(title:str="Select a file", initialdir:str=None, filetypes:list[tuple | list]=None, multiple:bool=True) -> (tuple | str):
         """

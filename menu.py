@@ -7,7 +7,7 @@ from shutil import rmtree
 from contextlib import suppress
 
 _to_delete = ["build", "dist", "oreto_utils.egg-info"]
-
+_version = "0.8"
 def build():
     system("python setup.py sdist bdist_wheel --universal")
     
@@ -21,7 +21,7 @@ def clean():
         rmtree(f"./{_}")
 
 def install():
-    system("pip install ./dist/oreto-utils-0.7.tar.gz")
+    system(f"pip install ./dist/oreto-utils-{_version}.tar.gz")
     
 def clterm():
     if name == "nt":
