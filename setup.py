@@ -27,7 +27,7 @@ setup(
         "Operating System :: OS Independent",
         "Development Status :: 5 - Production/Stable"
     ],
-    install_requires = ["PyQt5", "keyboard"],
+    install_requires = ["PyQt5", "keyboard", "psutil"],
     packages = find_packages(where="."),
     python_requires = ">=3.7"
 )
