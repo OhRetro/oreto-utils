@@ -2,7 +2,7 @@
 
 from PyQt5.QtWidgets import QMessageBox
 
-__all__ = ["displaymessage", "settext", "gettext"]
+__all__ = ["displaymessage", "settext", "gettext", "getelements"]
 
 Icon = {
     "Question": QMessageBox.Question, 
@@ -41,14 +41,17 @@ def displaymessage(title:str, message:str, informative:str=None, detailed:str=No
     if detailed is not None: display.setDetailedText(detailed)
     if icon is not None: display.setIcon(icon)
     if buttons is not None: display.setStandardButtons(buttons)
-    
     return display.exec_()
     
 #Set Gui Element Text
 def settext(gui, **element) -> None:
-    for _ in element:  
-        getattr(gui, _).setText(element[_])
+    for key, value in element.items():  
+        getattr(gui, key).setText(value)
         
 #Get Gui Element Text
 def gettext(gui, element) -> str:
     return getattr(gui, element).text()
+
+#Get Gui Elements
+def getelements(gui) -> list:
+    return [element.objectName() for element in gui.children()]

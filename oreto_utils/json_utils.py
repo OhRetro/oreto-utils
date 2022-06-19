@@ -1,18 +1,18 @@
 #JSON
 
-import json
-from oreto_utils.file_utils import File
+from json import loads as json_loads, dumps as json_dumps
+from oreto_utils.file_utils import File as ouf_File
 
 __all__ = ["JSON"]
 
 class JSON:
     def __init__(self, jsonfile:str, path:str="./", separator:str="."):
-        self.jsonfile = File(jsonfile.removesuffix(".json"), ".json", path)
+        self.jsonfile = ouf_File(jsonfile.removesuffix(".json"), ".json", path)
         self.separator = separator
     
     #It will return the whole json file content
     def load(self) -> dict:
-        return json.loads(self.jsonfile.read())
+        return json_loads(self.jsonfile.read())
     
     #It will get a specified key from the json file
     def getkey(self, key:str) -> any:
@@ -52,7 +52,7 @@ class JSON:
 
                 _key = _key[_extrakey]           
 
-        self.jsonfile.write(json.dumps(json_dict), True)
+        self.jsonfile.write(json_dumps(json_dict), True)
     
     #It will delete a specified key from the json file
     def delkey(self, key:str) -> None:
@@ -72,7 +72,7 @@ class JSON:
                 
                 _key = _key[_extrakey]
 
-        self.jsonfile.write(json.dumps(json_dict), True)
+        self.jsonfile.write(json_dumps(json_dict), True)
 
     #It will check if the key exists in the json file
     def existskey(self, key:str) -> bool:
@@ -83,5 +83,5 @@ class JSON:
             return False
     
     #It will get the key type from the json file
-    def keytype(self, key:str) -> str:
+    def keytype(self, key:str) -> any:
         return type(self.getkey(key))

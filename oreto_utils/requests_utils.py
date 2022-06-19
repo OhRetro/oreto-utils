@@ -11,4 +11,3 @@ def rget(url:str, params:dict=None, headers:dict=None, timeout:int=None, **kwarg
         return re_get(url=url, params=params, headers=headers, timeout=timeout, **kwargs)
     except ConnectionError:
         return None
-
