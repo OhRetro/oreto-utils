@@ -3,7 +3,7 @@
 from oreto_utils.terminal_utils import clearlines as out_clearlines
 from time import sleep as t_sleep
 
-__all__ = ["countdown", "formatsize", "Function"]
+__all__ = ["countdown", "formatsize"]
 
 #This is a countdown
 def countdown(seconds:int, message:str="", endmessage:str="") -> None:
@@ -32,27 +32,9 @@ def formatsize(bytesize:int) -> str:
         selected_unit = 5
 
     if bytesize >= 1024:
-        formated_size = float(f"{bytesize/1024**selected_unit:.2f}")
+        formated_size = round(bytesize/1024**selected_unit, 2)
     else:
-        formated_size = bytesize
+        formated_size = round(bytesize)
 
     units = ["Bytes", "KB", "MB", "GB", "TB", "PB"]
     return f"{formated_size} {units[selected_unit]}"
-
-#Function class
-class Function:
-    def __init__(self, function:callable, args:tuple=None, kwargs:dict=None) -> None:
-        self.function = function
-        self.args = args
-        self.kwargs = kwargs
-        
-        self.return_value = None
-        
-    def call(self) -> bool:
-        """Call a function and return True if the function reached its end, else return False."""
-        try:
-            self.return_value = function(*self.args, **self.kwargs)
-            return True
-        except Exception:
-            self.return_value = None
-            return False        

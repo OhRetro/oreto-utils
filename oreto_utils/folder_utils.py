@@ -3,40 +3,32 @@
 from os.path import isdir as osp_isdir, getsize as osp_getsize, join as osp_join, isfile as osp_isfile
 from os import mkdir as os_mkdir, listdir as os_listdir, remove as os_remove, walk as os_walk, rename as os_rename
 from shutil import rmtree as sh_rmtree, move as sh_move, copytree as sh_copytree, copyfile as sh_copyfile
-from tkinter import Tk, filedialog
+from oreto_utils.tkinter_utils import filedialog as outk_filedialog
 
 __all__ = ["Folder", "Folders"]
 
 class Folder:
-    def __init__(self, folder_name, parent_folder="./"):
-        self.folder_name = folder_name
-        self.parent_folder = parent_folder
-        self.attrs = {}
+    def __init__(self, foldername, parentfolder="./"):
+        self.foldername = foldername
+        self.parentfolder = parentfolder
         self._update()        
 
     #It will update the parent folder and folder name
     def _update(self) -> None:
         #Check if the parent folder have "\" to replace with "/"
-        if "\\" in self.parent_folder:
-            self.parent_folder = self.parent_folder.replace("\\", "/")
+        if "\\" in self.parentfolder:
+            self.parentfolder = self.parentfolder.replace("\\", "/")
 
         #Check if the folder path ends with "/"
-        if not self.parent_folder.endswith("/"):
-            self.parent_folder = f"{self.parent_folder}/"
+        if not self.parentfolder.endswith("/"):
+            self.parentfolder = f"{self.parentfolder}/"
         
-        self.folder = self.parent_folder+self.folder_name
-
-        self.attrs["NAME"] = self.folder_name
-        self.attrs["PARENT"] = self.parent_folder
-        self.attrs["FOLDER"] = self.folder
-        
-    def getattr(self, attr_name:str="ALL") -> dict:
-        return self.attrs if attr_name in {"ALL", ""} else self.attrs[attr_name]
+        self.folder = self.parentfolder+self.foldername
 
     #It will rename the folder name
-    def rename(self, new_folder_name) -> None:
+    def rename(self, new_foldername) -> None:
         old_folder = self.folder
-        self.folder_name = new_folder_name
+        self.foldername = new_foldername
         self._update()
         os_rename(old_folder, self.folder)
 
@@ -83,8 +75,8 @@ class Folder:
         if not self.exists():
             raise FileNotFoundError("There is no such folder to move.")
 
-        old_parent = self.parent_folder
-        self.parent_folder = path_destiny
+        old_parent = self.parentfolder
+        self.parentfolder = path_destiny
         self._update()
 
         sh_move(old_parent, path_destiny)
@@ -153,14 +145,11 @@ class Folder:
     #A dialog to select a folder will appear after that it will setup and separate the parent folder and folder name 
     def select(self, title:str="Select a folder", initialdir:str=None, mustexist:bool=False) -> bool:
         """It can return a boolean value to indicate if the folder was selected or not."""
-        root = Tk()
-        root.withdraw()
-        selected_folder = filedialog.askdirectory(title=title, initialdir=initialdir, mustexist=mustexist)
-        root.destroy()
+        selected_folder = outk_filedialog("Directory", title, initialdir=initialdir, mustexist=mustexist)
         
         if selected_folder != "":      
-            self.folder_name = selected_folder.split("/")[-1]
-            self.parent_folder = "/".join(selected_folder.split("/")[:-1])+"/"
+            self.foldername = selected_folder.split("/")[-1]
+            self.parentfolder = "/".join(selected_folder.split("/")[:-1])+"/"
             self._update()
             return True
         else:
@@ -181,8 +170,4 @@ class Folder:
     
 class Folders:
     def select(title:str="Select a folder", initialdir:str=None, mustexist:bool=True) -> str:
-        root = Tk()
-        root.withdraw()
-        selected_folder = filedialog.askdirectory(title=title, initialdir=initialdir, mustexist=mustexist)      
-        root.destroy()
-        return selected_folder
+        return outk_filedialog("Directory", title, initialdir=initialdir, mustexist=mustexist)

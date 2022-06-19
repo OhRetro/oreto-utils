@@ -2,13 +2,13 @@
 
 from PyQt5.QtWidgets import QMessageBox
 
-__all__ = ['displaymessage', 'settext', 'gettext']
+__all__ = ["displaymessage", "settext", "gettext"]
 
 Icon = {
     "Question": QMessageBox.Question, 
     "Information": QMessageBox.Information, 
     "Warning": QMessageBox.Warning, 
-    "Critical": QMessageBox.Critical}
+    "Critical": QMessageBox.Critical,}
     
 Button = {
     "Ok": QMessageBox.Ok,
@@ -26,7 +26,7 @@ Button = {
     "Reset": QMessageBox.Reset, 
     "SaveAll": QMessageBox.SaveAll, 
     "YesToAll": QMessageBox.YesToAll, 
-    "NoToAll": QMessageBox.NoToAll}
+    "NoToAll": QMessageBox.NoToAll,}
     
 #Display Message
 def displaymessage(title:str, message:str, informative:str=None, detailed:str=None, icon=None, buttons=None) -> None:

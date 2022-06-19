@@ -3,49 +3,38 @@
 from os import remove as os_remove, rename as os_rename, listdir as os_listdir
 from os.path import isfile as osp_isfile, getsize as osp_getsize, isdir as osp_isdir, abspath as osp_abspath
 from shutil import move as sh_move, copy as sh_copy
-from tkinter import Tk, filedialog
+from oreto_utils.tkinter_utils import filedialog as outk_filedialog
 
 __all__ = ["File", "Files"]
 
 class File:
-    def __init__(self, file_name, file_ext, file_path="./"):
-        self.file_name = file_name
-        self.file_path = file_path
-        self.file_ext = file_ext
-        self.attrs = {}
+    def __init__(self, filename, fileext, filepath="./"):
+        self.filename = filename
+        self.filepath = filepath
+        self.fileext = fileext
         self._update()
         
     #It will update the file path, file name and file extension
     def _update(self) -> None:
         #Check if the file path have "\" to replace with "/"        
-        if "\\" in self.file_path:
-            self.file_path = self.file_path.replace("\\", "/")
+        if "\\" in self.filepath:
+            self.filepath = self.filepath.replace("\\", "/")
         
         #Check if the file path ends with "/"
-        if not self.file_path.endswith("/"):
-            self.file_path = f"{self.file_path}/"
+        if not self.filepath.endswith("/"):
+            self.filepath = f"{self.filepath}/"
 
         #Check if the file extension starts with "."
-        if not self.file_ext.startswith(".") and self.file_ext != "":
-            self.file_ext = f".{self.file_ext}"
+        if not self.fileext.startswith(".") and self.fileext != "":
+            self.fileext = f".{self.fileext}"
 
-        self.file = self.file_path+self.file_name+self.file_ext
+        self.file = self.filepath+self.filename+self.fileext
         self.file_full_path = osp_abspath(self.file).replace("\\", "/")
-        
-        self.attrs["NAME"] = self.file_name
-        self.attrs["EXT"] = self.file_ext
-        self.attrs["FILE"] = self.file
-        self.attrs["FILE_EXT"] = self.file_name+self.file_ext
-        self.attrs["PATH"] = self.file_path
-        self.attrs["FULL_PATH"] = self.file_full_path
-        
-    def getattr(self, attr_name:str="ALL") -> dict:
-        return self.attrs if attr_name in {"ALL", ""} else self.attrs[attr_name]
-        
+                
     #It will rename the file name
-    def rename(self, new_file_name) -> None:
+    def rename(self, new_filename) -> None:
         old_file = self.file
-        self.file_name = new_file_name
+        self.filename = new_filename
         self._update()
         os_rename(old_file, self.file)
         
@@ -70,10 +59,10 @@ class File:
             return f_content[line_number]
         
     #It will write the content in the file and can check if the file exists and if it does it will overwrite it or not
-    def write(self, file_content="", overwrite:bool=False) -> None:
+    def write(self, file_content="", overwrite:bool=True) -> None:
         if self.exists() and not overwrite:
-            counter = sum(1 for _ in os_listdir(self.file_path) if _.startswith(self.file_name) and _.endswith(self.file_ext))
-            self.rename(f"{self.file_name} - Copy ({counter})")
+            counter = sum(1 for _ in os_listdir(self.filepath) if _.startswith(self.filename) and _.endswith(self.fileext))
+            self.rename(f"{self.filename} - Copy ({counter})")
             
         with open(f"{self.file}", "w") as f:
             f.write(file_content)
@@ -101,7 +90,7 @@ class File:
             raise FileNotFoundError("There is no such file to move.")
 
         old_path = self.file
-        self.file_path = path_destiny
+        self.filepath = path_destiny
         self._update()
 
         sh_move(old_path, path_destiny)
@@ -121,18 +110,15 @@ class File:
         return osp_isfile(f"{self.file}")
     
     #A dialog to select a file will appear after that it will setup and separate the file path, the file name and file extension 
-    def select(self, title:str="Select a file", initialdir:str=None, filetypes:list[tuple | list]=None) -> bool:
+    def select(self, title:str="Select a file", initialdir:str=None, filetypes:list[tuple]=None) -> bool:
         """It can return a boolean value to indicate if the file was selected or not."""
         if filetypes is None:
             filetypes = [("All Files (*.*)", "*.*")]
-        root = Tk()
-        root.withdraw()
-        selected_file = filedialog.askopenfilename(title=title, initialdir=initialdir, filetypes=filetypes)
-        root.destroy()
+        selected_file = outk_filedialog("FileName", title=title, initialdir=initialdir, filetypes=filetypes)
         if selected_file != "":
-            self.file_name = selected_file.split("/")[-1].split(".")[0]
-            self.file_ext = selected_file.split("/")[-1].split(".")[-1]
-            self.file_path = "/".join(selected_file.split("/")[:-1])+"/"
+            self.filename = selected_file.split("/")[-1].split(".")[0]
+            self.fileext = selected_file.split("/")[-1].split(".")[-1]
+            self.filepath = "/".join(selected_file.split("/")[:-1])+"/"
             self._update()
             return True
         else:
@@ -146,15 +132,11 @@ class File:
         return osp_getsize(self.file)
         
 class Files:
-    def select(title:str="Select a file", initialdir:str=None, filetypes:list[tuple | list]=None, multiple:bool=True) -> (tuple | str):
+    def select(title:str="Select a file", initialdir:str=None, filetypes:list[tuple]=None, multiple:bool=True) -> (tuple | str):
         """
         If the multiple argument is True, it will return a tuple with the selected files even if there is one file selected.\n
         Else, it will return a string with the selected file.
         """
         if filetypes is None:
             filetypes = [("All Files (*.*)", "*.*")]
-        root = Tk()
-        root.withdraw()
-        selected_file = filedialog.askopenfilename(title=title, initialdir=initialdir, filetypes=filetypes, multiple=multiple)
-        root.destroy()
-        return selected_file
+        return outk_filedialog("FileName", title=title, initialdir=initialdir, filetypes=filetypes, multiple=multiple)
