@@ -1,9 +1,9 @@
 #Others
 
-from oreto_utils.terminal_utils import clearlines as out_clearlines
+from terminal_utils import clearlines as out_clearlines
 from time import sleep as t_sleep
 
-__all__ = ["countdown", "formatsize"]
+__all__ = ["countdown", "formatsize", "searchlist"]
 
 #This is a countdown
 def countdown(seconds:int, message:str="", endmessage:str="") -> None:
@@ -38,3 +38,35 @@ def formatsize(bytesize:int) -> str:
 
     units = ["Bytes", "KB", "MB", "GB", "TB", "PB"]
     return f"{formated_size} {units[selected_unit]}"
+
+#This searches for a specific value in a list, and returns the index of the value
+#It will return None if the value is not found
+def searchlist(list:list, search:any, mode:str) -> list:
+    """
+    This searches for a specific value in a list, and returns the index of the value.
+    It will return None if the value is not found.\n
+    Modes:
+        f: first (does the same thing as e mode),
+        l: last (still thinking about this one),
+        ci: contains (index), ce: contains (exactly)
+        e: exact (does same thing as f mode),
+    """
+    VALID = ["f", "l", "ci", "ce", "e"]
+    if mode not in VALID:
+        raise ValueError(f"Mode {mode} is not valid. Valid modes are: {VALID}")
+    elif mode == "f":
+        if search in list:
+            return list.index(search)
+    elif mode == "l":
+        pass
+    elif mode == "ci":
+        if search in list:
+            return [list.index(items) for items in list if search in items]
+    elif mode == "ce":
+        if search in list:
+            return [items for items in list if search in items]
+    elif mode == "e":
+        if search in list:
+            return list.index(search)
+
+    return None
