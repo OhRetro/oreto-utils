@@ -1,6 +1,6 @@
 #Others
 
-from terminal_utils import clearlines as out_clearlines
+from oreto_utils.terminal_utils import clearlines as out_clearlines
 from time import sleep as t_sleep
 
 __all__ = ["countdown", "formatsize", "searchlist"]
@@ -41,32 +41,31 @@ def formatsize(bytesize:int) -> str:
 
 #This searches for a specific value in a list, and returns the index of the value
 #It will return None if the value is not found
-def searchlist(list:list, search:any, mode:str) -> list:
+def searchlist(list:list, search:any, mode:str) -> (list | int):
     """
     This searches for a specific value in a list, and returns the index of the value.
     It will return None if the value is not found.\n
     Modes:
-        f: first (does the same thing as e mode),
-        l: last (still thinking about this one),
-        ci: contains (index), ce: contains (exactly)
-        e: exact (does same thing as f mode),
+        f: First
+        l: Last
+        c1: Contains (Returns index), c2: Contains (Returns a list of exactly which ones contains the search term)
+        e: Exact
     """
-    VALID = ["f", "l", "ci", "ce", "e"]
-    if mode not in VALID:
-        raise ValueError(f"Mode {mode} is not valid. Valid modes are: {VALID}")
-    elif mode == "f":
-        if search in list:
+    if search in list:
+        VALID = ["f", "l", "c1", "c2", "e"]
+        if mode not in VALID:
+            raise ValueError(f"Mode {mode} is not valid. Valid modes are: {VALID}")
+        elif mode == "f":
+            items = [item for item in list if item.startswith(search)]
+            return items[0]
+        elif mode == "l":
+            items = [item for item in list if item.startswith(search)]
+            return items[-1]
+        elif mode[0] == "c":
+            if mode[1] == "1":
+                return [list.index(items) for items in list if search in items]
+            elif mode[1] == "2":
+                return [items for items in list if search in items]
+        elif mode == "e":
             return list.index(search)
-    elif mode == "l":
-        pass
-    elif mode == "ci":
-        if search in list:
-            return [list.index(items) for items in list if search in items]
-    elif mode == "ce":
-        if search in list:
-            return [items for items in list if search in items]
-    elif mode == "e":
-        if search in list:
-            return list.index(search)
-
     return None
