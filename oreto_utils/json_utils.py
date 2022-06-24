@@ -6,13 +6,18 @@ from oreto_utils.file_utils import File as ouf_File
 __all__ = ["JSON"]
 
 class JSON:
-    def __init__(self, jsonfile:str, path:str="./", separator:str="."):
-        self.jsonfile = ouf_File(jsonfile.removesuffix(".json"), ".json", path)
+    def __init__(self, file:str, path:str="./", separator:str="."):
+        self.file = ouf_File(file, path)
+        
+        #Checks if the file is a json file
+        if self.file._file["ext"] != ".json":
+            raise ValueError("The file is not a json file.")
+        
         self.separator = separator
     
     #It will return the whole json file content
     def load(self) -> dict:
-        return json_loads(self.jsonfile.read())
+        return json_loads(self.file.read())
     
     #It will get a specified key from the json file
     def getkey(self, key:str) -> any:
@@ -52,7 +57,7 @@ class JSON:
 
                 _key = _key[_extrakey]           
 
-        self.jsonfile.write(json_dumps(json_dict), True)
+        self.file.write(json_dumps(json_dict), True)
     
     #It will delete a specified key from the json file
     def delkey(self, key:str) -> None:
@@ -72,7 +77,7 @@ class JSON:
                 
                 _key = _key[_extrakey]
 
-        self.jsonfile.write(json_dumps(json_dict), True)
+        self.file.write(json_dumps(json_dict), True)
 
     #It will check if the key exists in the json file
     def existskey(self, key:str) -> bool:
