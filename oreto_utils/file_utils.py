@@ -10,55 +10,55 @@ __all__ = ["File", "Files"]
 class File:
     def __init__(self, file:str, path:str="./"):
         self._file = {
-            "file": file,
-            "name": None,
-            "ext": None,
-            "path": path,
-            "full_path": None,
-            "target": None,
+            "FILE": file,
+            "NAME": None,
+            "EXT": None,
+            "PATH": path,
+            "FULL_PATH": None,
+            "TARGET": None,
             }
         self._update()
         
     #It will update the file path, file name and file extension
     def _update(self) -> None:
         #Check if the file path have "\" to replace with "/"        
-        if "\\" in self._file["path"]:
-            self._file["path"] = self._file["path"].replace("\\", "/")
+        if "\\" in self._file["PATH"]:
+            self._file["PATH"] = self._file["PATH"].replace("\\", "/")
 
         #Check if file itself has "." to separate the file name and file extension
-        if "." in self._file["file"]:
-            btndots = self._file["file"].split(".")
+        if "." in self._file["FILE"]:
+            btndots = self._file["FILE"].split(".")
 
-            if self._file["file"].find(".") > 1:
+            if self._file["FILE"].find(".") > 1:
                 for _ in btndots:
-                    self._file["name"] += f".{_}"
+                    self._file["NAME"] += f".{_}"
 
-                self._file["name"].removesuffix(f".{btndots[-1]}")
+                self._file["NAME"].removesuffix(f".{btndots[-1]}")
             else:
-                self._file["name"] = btndots[0]
+                self._file["NAME"] = btndots[0]
                 
-            self._file["ext"] = f".{btndots[-1]}"
+            self._file["EXT"] = f".{btndots[-1]}"
 
         else:
-            self._file["name"] = self._file["file"]
+            self._file["NAME"] = self._file["FILE"]
 
-        self._file["full_path"] = osp_abspath(self._file["path"]).replace("\\", "/")
-        self._file["target"] = f"{self._file['full_path']}/{self._file['file']}"
+        self._file["FULL_PATH"] = osp_abspath(self._file["PATH"]).replace("\\", "/")
+        self._file["TARGET"] = f"{self._file['FULL_PATH']}/{self._file['FILE']}"
     
     #It will rename the file name
     def rename(self, new_filename) -> None:
-        old_file = self._file["target"]
-        self._file["file"] = new_filename
+        old_file = self._file["TARGET"]
+        self._file["FILE"] = new_filename
         self._update()
         
-        os_rename(old_file, self._file["target"])
+        os_rename(old_file, self._file["TARGET"])
         
     #It will return the file content
     def read(self) -> str:
         if not self.exists():
             raise FileNotFoundError("There is no such file to read.")
         
-        with open(f"{self._file['target']}", "r") as f:
+        with open(f"{self._file['TARGET']}", "r") as f:
             f_content = f.read()
             f.close()
             return f_content
@@ -68,14 +68,14 @@ class File:
         if not self.exists():
             raise FileNotFoundError("There is no such file to read.")
 
-        with open(f"{self._file['target']}", "r") as f:
+        with open(f"{self._file['TARGET']}", "r") as f:
             f_content = f.readlines()
             f.close()
             return f_content[line]
         
     #It will write the content in the file and can check if the file exists and if it does it will overwrite it or not
     def write(self, data:any="") -> None:
-        with open(f"{self._file['target']}", "w") as f:
+        with open(f"{self._file['TARGET']}", "w") as f:
             f.write(data)
             f.close()
             
@@ -84,7 +84,7 @@ class File:
         if not self.exists():
             raise FileNotFoundError("There is no such file to append.")
 
-        with open(f"{self._file['target']}", "a") as f:
+        with open(f"{self._file['TARGET']}", "a") as f:
             f.write(data)
             f.close()
                     
@@ -93,32 +93,32 @@ class File:
         if not self.exists():
             raise FileNotFoundError("There is no such file to delete.")
 
-        os_remove(f"{self._file['target']}")
+        os_remove(f"{self._file['TARGET']}")
 
     #It will move the file to the destiny path
-    def move(self, path_destiny:str) -> None:
+    def move(self, destiny:str) -> None:
         if not self.exists():
             raise FileNotFoundError("There is no such file to move.")
 
-        old_path = self._file["target"]
-        self._file["path"] = path_destiny
+        old_path = self._file["TARGET"]
+        self._file["PATH"] = destiny
         self._update()
 
-        sh_move(old_path, path_destiny)
+        sh_move(old_path, destiny)
         
     #It will copy the file to the destiny path
-    def copy(self, path_destiny:str) -> None:
+    def copy(self, destiny:str) -> None:
         if not self.exists():
             raise FileNotFoundError("There is no such file to copy.")
 
-        if not osp_isdir(path_destiny):
+        if not osp_isdir(destiny):
             raise NotADirectoryError("There is no such directory to copy the file into.")
         
-        sh_copy(self._file["target"], path_destiny)
+        sh_copy(self._file["TARGET"], destiny)
         
     #It will return True if the file exists
     def exists(self) -> bool:
-        return osp_isfile(f"{self._file['target']}")
+        return osp_isfile(f"{self._file['TARGET']}")
     
     #A dialog to select a file will appear after that it will setup and separate the file path, the file name and file extension 
     def select(self, title:str="Select a file", initialdir:str=None, filetypes:list[tuple]=None) -> bool:
@@ -129,8 +129,8 @@ class File:
         selected_file = outk_filedialog("FileName", title=title, initialdir=initialdir, filetypes=filetypes)
         
         if selected_file != "":
-            self._file["file"] = selected_file.split("/")[-1]
-            self._file["path"] = "/".join(selected_file.split("/")[:-1])
+            self._file["FILE"] = selected_file.split("/")[-1]
+            self._file["PATH"] = "/".join(selected_file.split("/")[:-1])
             self._update()
             return True
         else:
@@ -141,7 +141,7 @@ class File:
         if not self.exists():
             raise FileNotFoundError("There is no such file to get the size.")
 
-        return osp_getsize(self._file["target"])
+        return osp_getsize(self._file["TARGET"])
         
 class Files:
     def select(title:str="Select a file", initialdir:str=None, filetypes:list[tuple]=None, multiple:bool=True) -> (tuple | str):

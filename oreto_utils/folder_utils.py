@@ -8,47 +8,50 @@ from oreto_utils.tkinter_utils import filedialog as outk_filedialog
 __all__ = ["Folder", "Folders"]
 
 class Folder:
-    def __init__(self, foldername, parentfolder="./"):
-        self.foldername = foldername
-        self.parentfolder = parentfolder
+    def __init__(self, folder, parent="./"):
+        self._folder = {
+            "FOLDER": folder,
+            "PARENT": parent,
+            "FULL_PATH": None
+        }
         self._update()        
 
     #It will update the parent folder and folder name
     def _update(self) -> None:
         #Check if the parent folder have "\" to replace with "/"
-        if "\\" in self.parentfolder:
-            self.parentfolder = self.parentfolder.replace("\\", "/")
+        if "\\" in self._folder["PARENT"]:
+            self._folder["PARENT"] = self._folder["PARENT"].replace("\\", "/")
 
         #Check if the folder path ends with "/"
-        if not self.parentfolder.endswith("/"):
-            self.parentfolder = f"{self.parentfolder}/"
+        if not self._folder["PARENT"].endswith("/"):
+            self._folder["PARENT"] = f"{self._folder['PARENT']}/"
         
-        self.folder = self.parentfolder+self.foldername
+        self._folder["FULL_PATH"] = self._folder["PARENT"]+self._folder["FOLDER"]
 
     #It will rename the folder name
-    def rename(self, new_foldername) -> None:
-        old_folder = self.folder
-        self.foldername = new_foldername
+    def rename(self, newname) -> None:
+        old_folder = self._folder["FULL_PATH"]
+        self._folder["FOLDER"] = newname
         self._update()
-        os_rename(old_folder, self.folder)
+        os_rename(old_folder, self._folder["FULL_PATH"])
 
     #It will return True if the folder exists
     def exists(self) -> bool:
-        return osp_isdir(f"{self.folder}")
+        return osp_isdir(f"{self._folder['FULL_PATH']}")
     
     #It will create the folder
     def create(self) -> None:
         if self.exists():
             raise FileExistsError("The folder already exists")
         
-        os_mkdir(f"{self.folder}")
+        os_mkdir(f"{self._folder['FULL_PATH']}")
         
     #It will delete the folder
     def delete(self) -> None:
         if not self.exists():
             raise FileNotFoundError("There is no such folder to delete.")
         
-        sh_rmtree(f"{self.folder}")
+        sh_rmtree(f"{self._folder['FULL_PATH']}")
 
     #It will delete all the contents of the folder and will check if a folder or a file
     def deletecontents(self, exception:list=None) -> None:
@@ -65,21 +68,21 @@ class Folder:
                 contents.remove(ex)
 
         for content in contents:
-            if osp_isdir(f"{self.folder}/{content}"):
-                sh_rmtree(f"{self.folder}/{content}")
-            elif osp_isfile(f"{self.folder}/{content}"):
-                os_remove(f"{self.folder}/{content}")
+            if osp_isdir(f"{self._folder['FULL_PATH']}/{content}"):
+                sh_rmtree(f"{self._folder['FULL_PATH']}/{content}")
+            elif osp_isfile(f"{self._folder['FULL_PATH']}/{content}"):
+                os_remove(f"{self._folder['FULL_PATH']}/{content}")
                                 
     #It will move the folder
-    def move(self, path_destiny:str) -> None:
+    def move(self, destiny:str) -> None:
         if not self.exists():
             raise FileNotFoundError("There is no such folder to move.")
 
-        old_parent = self.parentfolder
-        self.parentfolder = path_destiny
+        old_parent = self._folder["PARENT"]
+        self._folder["PARENT"] = destiny
         self._update()
 
-        sh_move(old_parent, path_destiny)
+        sh_move(old_parent, destiny)
     
     #It will move the contents of the folder into another folder
     def movecontents(self, destiny:str, exception:list=None) -> None:
@@ -96,20 +99,20 @@ class Folder:
                 contents.remove(ex)
 
         for content in contents:
-            sh_move(f"{self.folder}/{content}", f"{destiny}/{content}")
+            sh_move(f"{self._folder['FULL_PATH']}/{content}", f"{destiny}/{content}")
             
     #It will copy the folder to the destiny
-    def copy(self, path_destiny:str) -> None:
+    def copy(self, destiny:str) -> None:
         if not self.exists():
             raise FileNotFoundError("There is no such file to copy.")
 
-        if not osp_isdir(path_destiny):
+        if not osp_isdir(destiny):
             raise NotADirectoryError("The destiny is not a folder.")
 
-        sh_copytree(self.folder, path_destiny)
+        sh_copytree(self._folder["FULL_PATH"], destiny)
         
     #It will copy the contents of the folder to the destiny and will check if a folder or a file
-    def copycontents(self, path_destiny:str, exception:list=None) -> None:
+    def copycontents(self, destiny:str, exception:list=None) -> None:
         if not self.exists():
             raise FileNotFoundError("There is no such folder to copy the contents.")
 
@@ -123,17 +126,17 @@ class Folder:
                 contents.remove(ex)
 
         for content in contents:
-            if osp_isdir(f"{self.folder}/{content}"):
-                sh_copytree(f"{self.folder}/{content}", f"{path_destiny}/{content}")
-            elif osp_isfile(f"{self.folder}/{content}"):
-                sh_copyfile(f"{self.folder}/{content}", f"{path_destiny}/{content}")
+            if osp_isdir(f"{self._folder['FULL_PATH']}/{content}"):
+                sh_copytree(f"{self._folder['FULL_PATH']}/{content}", f"{destiny}/{content}")
+            elif osp_isfile(f"{self._folder['FULL_PATH']}/{content}"):
+                sh_copyfile(f"{self._folder['FULL_PATH']}/{content}", f"{destiny}/{content}")
                   
     #It will list all the contents of the folder
     def list(self) -> list:
         if not self.exists():
             raise FileNotFoundError("There is no such folder to list the contents.")
 
-        return os_listdir(f"{self.folder}")
+        return os_listdir(f"{self._folder['FULL_PATH']}")
         
     #It will count all the contents inside the folder
     def count(self) -> int:
@@ -148,8 +151,8 @@ class Folder:
         selected_folder = outk_filedialog("Directory", title, initialdir=initialdir, mustexist=mustexist)
         
         if selected_folder != "":      
-            self.foldername = selected_folder.split("/")[-1]
-            self.parentfolder = "/".join(selected_folder.split("/")[:-1])+"/"
+            self._folder["FOLDER"] = selected_folder.split("/")[-1]
+            self._folder["PARENT"] = "/".join(selected_folder.split("/")[:-1])+"/"
             self._update()
             return True
         else:
@@ -161,7 +164,7 @@ class Folder:
             raise FileNotFoundError("There is no such folder to get the size.")
 
         size = 0
-        for path, dirs, files in os_walk(self.folder):
+        for path, dirs, files in os_walk(self._folder["FULL_PATH"]):
             for f in files:
                 fp = osp_join(path, f)
                 size += osp_getsize(fp)

@@ -1,10 +1,10 @@
 #Tkinter
 
-from tkinter import messagebox as tk_messagebox, filedialog as tk_filedialog, Button as tk_Button, Tk as tk_Tk, Label as tk_Label
+from tkinter import messagebox as tk_messagebox, filedialog as tk_filedialog
 
-__all__ = ["messagebox", "filedialog", "GUI"]
+__all__ = ["messagebox", "filedialog"]
 
-message_type = {
+Message = {
     "Info": tk_messagebox.showinfo,
     "Warning": tk_messagebox.showwarning,
     "Error": tk_messagebox.showerror,
@@ -14,7 +14,7 @@ message_type = {
     "RetryCancel": tk_messagebox.askretrycancel,
     "YesNoCancel": tk_messagebox.askyesnocancel,}
 
-dialog_type = {
+Dialog = {
     "File": tk_filedialog.askopenfile,
     "Files": tk_filedialog.askopenfiles,
     "FileName": tk_filedialog.asksaveasfilename,
@@ -23,31 +23,17 @@ dialog_type = {
     "Directory": tk_filedialog.askdirectory,}
 
 #Messagebox
-def messagebox(messagetype:message_type, title:str, message:str, **kwargs) -> tk_messagebox:
-    if messagetype not in message_type:
+def messagebox(type:Message, title:str, message:str, **kwargs) -> tk_messagebox:
+    """It displays a message box with the given parameters.\n"""
+    if type not in Message:
         raise ValueError("Message Type not in valid type list")
 
-    return message_type[messagetype](title=title, message=message, **kwargs)
+    return Message[type](title=title, message=message, **kwargs)
 
 #Filedialog
-def filedialog(dialogtype:dialog_type, title:str, **kwargs) -> tk_filedialog:
-    if dialogtype not in dialog_type:
+def filedialog(type:Dialog, title:str, **kwargs) -> tk_filedialog:
+    """It displays a file dialog with the given parameters.\n"""
+    if type not in Dialog:
         raise ValueError("Dialog Type not in valid type list")
     
-    return dialog_type[dialogtype](title=title, **kwargs)
-
-#Tkinter GUI
-class GUI(tk_Tk):
-    def __init__(self, title:str, size:tuple=(800, 600), **kwargs):
-        super().__init__()
-        self.title(title)
-        self.geometry(f"{size[0]}x{size[1]}")
-        self.kwargs = kwargs
-    
-    #Label
-    def label(self, text:str, **kwargs) -> tk_Label:
-        return tk_Label(master=self, text=text, **kwargs)
-                
-    #Button
-    def button(self, text:str, function:callable, **kwargs) -> tk_Button:
-        return tk_Button(master=self, text=text, command=function, **kwargs)
+    return Dialog[type](title=title, **kwargs)

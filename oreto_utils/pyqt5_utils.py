@@ -1,8 +1,9 @@
 #PyQt5
 
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtGui import QIcon
 
-__all__ = ["displaymessage", "settext", "gettext", "getelements"]
+__all__ = ["displaymessage", "bindbutton", "settext", "gettext", "getelements"]
 
 Icon = {
     "Question": QMessageBox.Question, 
@@ -29,7 +30,7 @@ Button = {
     "NoToAll": QMessageBox.NoToAll,}
     
 #Display Message
-def displaymessage(title:str, message:str, informative:str=None, detailed:str=None, icon=None, buttons=None) -> None:
+def displaymessage(title:str, message:str, informative:str=None, detailed:str=None, icon:Icon=None, buttons:Button=None, windowicon=None) -> None:
     """
     It displays a message box with the given parameters.\n
     It can only be called inside a running QApplication.
@@ -41,12 +42,16 @@ def displaymessage(title:str, message:str, informative:str=None, detailed:str=No
     if detailed is not None: display.setDetailedText(detailed)
     if icon is not None: display.setIcon(icon)
     if buttons is not None: display.setStandardButtons(buttons)
+    if windowicon is not None: display.setWindowIcon(QIcon(windowicon))
     return display.exec_()
     
+def bindbutton(gui, button:str, function:callable) -> None:
+    getattr(gui, button).clicked.connect(function)
+
 #Set Gui Element Text
 def settext(gui, **element) -> None:
-    for key, value in element.items():  
-        getattr(gui, key).setText(value)
+    for _ in element:  
+        getattr(gui, _).setText(str(element[_]))
         
 #Get Gui Element Text
 def gettext(gui, element) -> str:
