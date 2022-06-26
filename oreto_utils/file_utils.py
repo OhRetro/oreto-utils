@@ -85,7 +85,7 @@ class File:
     #It will write the content in the file and will overwrite the content if the file already exists
     def write(self, data:any="") -> None:
         """It will write the content in the file and will overwrite the content if the file already exists."""
-        with open(self._file["TARGET"], "w") as f:
+        with open(self._file["TARGET"], "w", encoding="utf_8") as f:
             f.write(data)
             f.close()
             
