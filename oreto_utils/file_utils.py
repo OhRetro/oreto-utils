@@ -95,7 +95,7 @@ class File:
         if not self.exists():
             raise FileNotFoundError("There is no such file to append.")
 
-        with open(self._file["TARGET"], "a") as f:
+        with open(self._file["TARGET"], "a", encoding="utf_8") as f:
             f.write(data)
             f.close()
                     
