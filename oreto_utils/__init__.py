@@ -1,14 +1,14 @@
 """
 It's a collection of useful utilities.
 Available utilities:
-- terminal_utils: Terminal utilities.
-- process_utils: Process utilities.
-- json_utils: JSON utilities.
-- file_utils: File utilities.
-- folder_utils: Folder utilities.
-- others_utils: Others utilities.
-- pyqt5_utils: PyQt5 utilities.
-- tkinter_utils: Tkinter utilities.
+- terminal: Terminal utilities.
+- process: Process utilities.
+- json: JSON utilities.
+- file: File utilities.
+- folder: Folder utilities.
+- others: Others utilities.
+- pyqt5: PyQt5 utilities.
+- tkinter: Tkinter utilities.
 """
 __title__ = "oreto-utils"
 __author__ = "OhRetro"
