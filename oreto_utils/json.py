@@ -1,26 +1,28 @@
 #JSON
 
 from json import loads as json_loads, dumps as json_dumps
-from oreto_utils.file_utils import File as ouf_File
+from oreto_utils.file import File as ouf_File
 
 __all__ = ["JSON"]
 
 class JSON:
     def __init__(self, file:str, path:str="./", separator:str="."):
-        self.file = ouf_File(file, path)
+        self.json = ouf_File(file, path)
         
         #Checks if the file is a json file
-        if self.file._file["ext"] != ".json":
+        if self.json._file["EXT"] != ".json":
             raise ValueError("The file is not a json file.")
         
         self.separator = separator
     
     #It will return the whole json file content
     def load(self) -> dict:
-        return json_loads(self.file.read())
+        """It will return the whole json file content"""
+        return json_loads(self.json.read())
     
     #It will get a specified key from the json file
     def getkey(self, key:str) -> any:
+        """It will get a specified key from the json file"""
         if self.separator not in key:
             return self.load()[key]
 
@@ -38,6 +40,7 @@ class JSON:
     
     #It will set a specified key in the json file
     def setkey(self, key:str, value:any) -> None:
+        """It will set a specified key in the json file"""
         json_dict = self.load()
 
         if self.separator not in key:
@@ -57,10 +60,11 @@ class JSON:
 
                 _key = _key[_extrakey]           
 
-        self.file.write(json_dumps(json_dict), True)
+        self.json.write(json_dumps(json_dict), True)
     
     #It will delete a specified key from the json file
     def delkey(self, key:str) -> None:
+        """It will delete a specified key from the json file"""
         json_dict = self.load()
 
         if self.separator not in key:
@@ -77,10 +81,11 @@ class JSON:
                 
                 _key = _key[_extrakey]
 
-        self.file.write(json_dumps(json_dict), True)
+        self.json.write(json_dumps(json_dict), True)
 
     #It will check if the key exists in the json file
     def existskey(self, key:str) -> bool:
+        """It will check if the key exists in the json file"""
         try:
             if self.getkey(key) is not None:
                 return True
@@ -89,4 +94,5 @@ class JSON:
     
     #It will get the key type from the json file
     def keytype(self, key:str) -> any:
+        """It will get the key type from the json file"""
         return type(self.getkey(key))

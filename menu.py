@@ -41,6 +41,7 @@ if __name__ == "__main__":
         print("1.build\n2.upload\n3.clean\n4.install build\n5.change ver\n0.exit\n")
         try:
             _inp = input(">")
+                        
             with suppress(Exception):
                 _extr = _inp.split(" ")[1] if len(_inp.split(" ")) > 1 else ""
                 _inp = _inp.split(" ")[0]

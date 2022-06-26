@@ -1,7 +1,7 @@
 #Process
 
-from oreto_utils.terminal_utils import clearlines as out_clearlines
-from oreto_utils.others_utils import countdown as ouo_countdown
+from oreto_utils.terminal import clearlines as out_clearlines
+from oreto_utils.others import countdown as ouo_countdown
 from psutil import process_iter as ps_pi
 
 __all__ = ["waitprocess", "isrunning", "killprocess"]

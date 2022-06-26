@@ -1,6 +1,6 @@
 #Others
 
-from oreto_utils.terminal_utils import clearlines as out_clearlines
+from oreto_utils.terminal import clearlines as out_clearlines
 from time import sleep as t_sleep
 
 __all__ = ["countdown", "formatsize", "searchlist"]
