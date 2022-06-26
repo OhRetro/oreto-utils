@@ -1,7 +1,7 @@
 #JSON
 
 from json import loads as json_loads, dumps as json_dumps
-from oreto_utils.file import File as ouf_File
+from oreto_utils.file_utils import File as ouf_File
 
 __all__ = ["JSON"]
 

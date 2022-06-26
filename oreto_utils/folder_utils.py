@@ -3,7 +3,7 @@
 from os.path import isdir as osp_isdir, getsize as osp_getsize, join as osp_join, isfile as osp_isfile
 from os import mkdir as os_mkdir, listdir as os_listdir, remove as os_remove, walk as os_walk, rename as os_rename
 from shutil import rmtree as sh_rmtree, move as sh_move, copytree as sh_copytree, copyfile as sh_copyfile
-from oreto_utils.tkinter import filedialog as outk_filedialog
+from oreto_utils.tkinter_utils import filedialog as outk_filedialog
 
 __all__ = ["Folder", "Folders"]
 

@@ -3,7 +3,7 @@
 from os import remove as os_remove, rename as os_rename
 from os.path import isfile as osp_isfile, getsize as osp_getsize, isdir as osp_isdir, abspath as osp_abspath
 from shutil import move as sh_move, copy as sh_copy
-from oreto_utils.tkinter import filedialog as outk_filedialog
+from oreto_utils.tkinter_utils import filedialog as outk_filedialog
 
 __all__ = ["File", "Files"]
 
