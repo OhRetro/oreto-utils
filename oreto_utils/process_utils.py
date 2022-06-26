@@ -12,7 +12,6 @@ def waitprocess(process:str, waituntil:str, updaterate:int=1, afterwait:callable
     Wait for a process to start/end.\n
     Valid waituntil values are "start" and "end".\n
     The afterwait argument is a function that will be called after the process has started/ended.\n
-    I recommend to use lambda.
     """
     
     #Valid waituntil values

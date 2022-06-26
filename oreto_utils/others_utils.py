@@ -41,7 +41,7 @@ def formatsize(bytesize:int) -> str:
 
 #This searches for a specific value in a list, and returns the index of the value
 #It will return None if the value is not found
-def searchlist(list:list, search:any, mode:str) -> (list | int):
+def searchlist(list:list, search:str, mode:str) -> (list | int):
     """
     This searches for a specific value (STRING ONLY FOR NOW) in a list, and returns the index of the value.
     It will return None if the value is not found.\n
