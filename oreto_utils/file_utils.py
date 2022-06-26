@@ -1,136 +1,151 @@
 #File(s)
 
-from os import remove as os_remove, rename as os_rename, listdir as os_listdir
+from os import remove as os_remove, rename as os_rename
 from os.path import isfile as osp_isfile, getsize as osp_getsize, isdir as osp_isdir, abspath as osp_abspath
 from shutil import move as sh_move, copy as sh_copy
-from tkinter import Tk, filedialog
+from oreto_utils.tkinter_utils import filedialog as outk_filedialog
+
+__all__ = ["File", "Files"]
 
 class File:
-    def __init__(self, file_name, file_ext, file_path="./"):
-        self.file_name = file_name
-        self.file_path = file_path
-        self.file_ext = file_ext
-        self.attrs = {}
+    def __init__(self, file:str, path:str="./"):
+        self._file = {
+            "FILE": file,
+            "NAME": None,
+            "EXT": None,
+            "PATH": path,
+            "FULL_PATH": None,
+            "TARGET": None,
+            }
         self._update()
         
     #It will update the file path, file name and file extension
     def _update(self) -> None:
         #Check if the file path have "\" to replace with "/"        
-        if "\\" in self.file_path:
-            self.file_path = self.file_path.replace("\\", "/")
-        
-        #Check if the file path ends with "/"
-        if not self.file_path.endswith("/"):
-            self.file_path = f"{self.file_path}/"
+        if "\\" in self._file["PATH"]:
+            self._file["PATH"] = self._file["PATH"].replace("\\", "/")
 
-        #Check if the file extension starts with "."
-        if not self.file_ext.startswith(".") and self.file_ext != "":
-            self.file_ext = f".{self.file_ext}"
+        #Check if the file name have "\" or "/" to replace with "_"
+        if "\\" in self._file["FILE"]:
+            self._file["FILE"] = self._file["FILE"].replace("\\", "_")
+        if "/" in self._file["FILE"]:
+            self._file["FILE"] = self._file["FILE"].replace("/", "_")
 
-        self.file = self.file_path+self.file_name+self.file_ext
-        self.file_full_path = osp_abspath(self.file).replace("\\", "/")
-        
-        self.attrs["NAME"] = self.file_name
-        self.attrs["EXT"] = self.file_ext
-        self.attrs["FILE"] = self.file
-        self.attrs["FILE_EXT"] = self.file_name+self.file_ext
-        self.attrs["PATH"] = self.file_path
-        self.attrs["FULL_PATH"] = self.file_full_path
-        
-    def getattr(self, attr_name:str="ALL") -> dict:
-        return self.attrs if attr_name in {"ALL", ""} else self.attrs[attr_name]
-        
+        #Check if file itself has "." to separate the file name and file extension
+        if "." in self._file["FILE"]:
+            btndots = self._file["FILE"].split(".")
+
+            self._file["NAME"] = btndots[0]
+            if self._file["FILE"].find(".") > 1:
+                for _ in btndots:
+                    if _ not in [btndots[0], btndots[-1]]:
+                        self._file["NAME"] += f".{_}"
+            self._file["EXT"] = f".{btndots[-1]}"
+
+        else:
+            self._file["NAME"] = self._file["FILE"]
+
+        self._file["FULL_PATH"] = osp_abspath(self._file["PATH"]).replace("\\", "/")
+        self._file["TARGET"] = f"{self._file['FULL_PATH']}/{self._file['FILE']}"
+    
     #It will rename the file name
-    def rename(self, new_file_name) -> None:
-        old_file = self.file
-        self.file_name = new_file_name
+    def rename(self, newname) -> None:
+        """It will rename the file name."""
+        if not self.exists():
+            raise FileNotFoundError("There is no such file to rename.")
+        
+        old_file = self._file["TARGET"]
+        self._file["FILE"] = f"{newname}{self._file['EXT']}"
         self._update()
-        os_rename(old_file, self.file)
+        
+        os_rename(old_file, self._file["TARGET"])
         
     #It will return the file content
     def read(self) -> str:
+        """It will return the file content."""
         if not self.exists():
             raise FileNotFoundError("There is no such file to read.")
         
-        with open(f"{self.file}", "r") as f:
+        with open(self._file["TARGET"], "r") as f:
             f_content = f.read()
             f.close()
             return f_content
     
     #It will return a specified line of the file content
-    def readline(self, line_number:int) -> str:
+    def readline(self, line:int) -> str:
+        """It will return a specified line of the file content."""
         if not self.exists():
             raise FileNotFoundError("There is no such file to read.")
 
-        with open(f"{self.file}", "r") as f:
+        with open(self._file["TARGET"], "r") as f:
             f_content = f.readlines()
             f.close()
-            return f_content[line_number]
+            return f_content[line]
         
-    #It will write the content in the file and can check if the file exists and if it does it will overwrite it or not
-    def write(self, file_content="", overwrite:bool=False) -> None:
-        if self.exists() and not overwrite:
-            counter = sum(1 for _ in os_listdir(self.file_path) if _.startswith(self.file_name) and _.endswith(self.file_ext))
-            self.rename(f"{self.file_name} - Copy ({counter})")
-            
-        with open(f"{self.file}", "w") as f:
-            f.write(file_content)
+    #It will write the content in the file and will overwrite the content if the file already exists
+    def write(self, data:any="") -> None:
+        """It will write the content in the file and will overwrite the content if the file already exists."""
+        with open(self._file["TARGET"], "w", encoding="utf_8") as f:
+            f.write(data)
             f.close()
             
     #It will append the content to the file
-    def append(self, file_content:str) -> None:
+    def append(self, data:any="") -> None:
+        """It will append the content to the file."""
         if not self.exists():
             raise FileNotFoundError("There is no such file to append.")
 
-        with open(f"{self.file}", "a") as f:
-            f.write(file_content)
+        with open(self._file["TARGET"], "a", encoding="utf_8") as f:
+            f.write(data)
             f.close()
                     
     #It will delete the file
     def delete(self) -> None:
+        """It will delete the file."""
         if not self.exists():
             raise FileNotFoundError("There is no such file to delete.")
 
-        os_remove(f"{self.file}")
+        os_remove(f"{self._file['TARGET']}")
 
     #It will move the file to the destiny path
-    def move(self, path_destiny:str) -> None:
+    def move(self, destiny:str) -> None:
+        """It will move the file to the destiny path."""
         if not self.exists():
             raise FileNotFoundError("There is no such file to move.")
 
-        old_path = self.file
-        self.file_path = path_destiny
+        old_path = self._file["TARGET"]
+        self._file["PATH"] = destiny
         self._update()
 
-        sh_move(old_path, path_destiny)
+        sh_move(old_path, destiny)
         
     #It will copy the file to the destiny path
-    def copy(self, path_destiny:str) -> None:
+    def copy(self, destiny:str) -> None:
+        """It will copy the file to the destiny path."""
         if not self.exists():
             raise FileNotFoundError("There is no such file to copy.")
 
-        if not osp_isdir(path_destiny):
+        if not osp_isdir(destiny):
             raise NotADirectoryError("There is no such directory to copy the file into.")
         
-        sh_copy(self.file, path_destiny)
+        sh_copy(self._file["TARGET"], destiny)
         
     #It will return True if the file exists
     def exists(self) -> bool:
-        return osp_isfile(f"{self.file}")
+        """It will return True if the file exists."""
+        return osp_isfile(f"{self._file['TARGET']}")
     
     #A dialog to select a file will appear after that it will setup and separate the file path, the file name and file extension 
-    def select(self, title:str="Select a file", initialdir:str=None, filetypes:list[tuple | list]=None) -> bool:
+    def select(self, title:str="Select a file", initialdir:str=None, filetypes:list[tuple]=None) -> bool:
         """It can return a boolean value to indicate if the file was selected or not."""
         if filetypes is None:
             filetypes = [("All Files (*.*)", "*.*")]
-        root = Tk()
-        root.withdraw()
-        selected_file = filedialog.askopenfilename(title=title, initialdir=initialdir, filetypes=filetypes)
-        root.destroy()
+            
+        selected_file = outk_filedialog("FileName", title=title, initialdir=initialdir, filetypes=filetypes)
+        
         if selected_file != "":
-            self.file_name = selected_file.split("/")[-1].split(".")[0]
-            self.file_ext = selected_file.split("/")[-1].split(".")[-1]
-            self.file_path = "/".join(selected_file.split("/")[:-1])+"/"
+            self._file["FILE"] = selected_file.split("/")[-1]
+            self._file["PATH"] = "/".join(selected_file.split("/")[:-1])
             self._update()
             return True
         else:
@@ -138,21 +153,19 @@ class File:
                 
     #It will get the file total size return it in bytes
     def size(self) -> int:
+        """It will return the file total size in bytes."""
         if not self.exists():
             raise FileNotFoundError("There is no such file to get the size.")
 
-        return osp_getsize(self.file)
-    
+        return osp_getsize(self._file["TARGET"])
+        
 class Files:
-    def select(title:str="Select a file", initialdir:str=None, filetypes:list[tuple | list]=None, multiple:bool=True) -> (tuple | str):
+    def select(title:str="Select a file", initialdir:str=None, filetypes:list[tuple]=None, multiple:bool=True) -> (tuple | str):
         """
         If the multiple argument is True, it will return a tuple with the selected files even if there is one file selected.\n
         Else, it will return a string with the selected file.
         """
         if filetypes is None:
             filetypes = [("All Files (*.*)", "*.*")]
-        root = Tk()
-        root.withdraw()
-        selected_file = filedialog.askopenfilename(title=title, initialdir=initialdir, filetypes=filetypes, multiple=multiple)
-        root.destroy()
-        return selected_file
+            
+        return outk_filedialog("FileName", title=title, initialdir=initialdir, filetypes=filetypes, multiple=multiple)
