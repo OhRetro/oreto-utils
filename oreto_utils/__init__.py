@@ -4,6 +4,8 @@ It's a collection of useful utilities.\n
 Available utilities:
 - terminal_utils: Terminal utilities.
 - process_utils: Process utilities.
+- multiprocessing_utils: Multiprocessing utilities.
+- thread_utils: Thread utilities.
 - json_utils: JSON utilities.
 - file_utils: File utilities.
 - folder_utils: Folder utilities.
@@ -19,4 +21,4 @@ import oreto_utils.terminal
 __title__ = "oreto-utils"
 __author__ = "OhRetro"
 __license__ = "MIT"
-__version__ = "0.8"
+__version__ = "0.9"
