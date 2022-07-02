@@ -3,9 +3,9 @@
 from os import remove as os_remove, rename as os_rename
 from os.path import isfile as osp_isfile, getsize as osp_getsize, isdir as osp_isdir, abspath as osp_abspath
 from shutil import move as sh_move, copy as sh_copy
-from oreto_utils.tkinter_utils import filedialog as outk_filedialog
+from oreto_utils.tkinter_utils import dialog as outk_dialog
 
-__all__ = ["File", "Files"]
+__all__ = ["File"]
 
 class File:
     def __init__(self, file:str, path:str="./"):
@@ -140,9 +140,8 @@ class File:
         """It can return a boolean value to indicate if the file was selected or not."""
         if filetypes is None:
             filetypes = [("All Files (*.*)", "*.*")]
-            
-        selected_file = outk_filedialog("FileName", title=title, initialdir=initialdir, filetypes=filetypes)
-        
+
+        selected_file = outk_dialog("OpenFileName", title=title, initialdir=initialdir, filetypes=filetypes)
         if selected_file != "":
             self._file["FILE"] = selected_file.split("/")[-1]
             self._file["PATH"] = "/".join(selected_file.split("/")[:-1])
@@ -158,14 +157,3 @@ class File:
             raise FileNotFoundError("There is no such file to get the size.")
 
         return osp_getsize(self._file["TARGET"])
-        
-class Files:
-    def select(title:str="Select a file", initialdir:str=None, filetypes:list[tuple]=None, multiple:bool=True) -> (tuple | str):
-        """
-        If the multiple argument is True, it will return a tuple with the selected files even if there is one file selected.\n
-        Else, it will return a string with the selected file.
-        """
-        if filetypes is None:
-            filetypes = [("All Files (*.*)", "*.*")]
-            
-        return outk_filedialog("FileName", title=title, initialdir=initialdir, filetypes=filetypes, multiple=multiple)

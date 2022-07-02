@@ -45,7 +45,7 @@ def displaymessage(title:str, message:str, informative:str=None, detailed:str=No
     if windowicon is not None: display.setWindowIcon(QIcon(windowicon))
     return display.exec_()
     
-def bindbutton(gui, button:str, function:function) -> None:
+def bindbutton(gui, button:str, function) -> None:
     getattr(gui, button).clicked.connect(function)
 
 #Set Gui Element Text

@@ -7,7 +7,7 @@ from psutil import process_iter as ps_pi
 __all__ = ["waitprocess", "isrunning", "killprocess"]
 
 #Wait for a process to start/end
-def waitprocess(process:str, waituntil:str, updaterate:int=1, afterwait:function=None) -> None:
+def waitprocess(process:str, waituntil:str, updaterate:int=1, afterwait=None) -> None:
     """
     Wait for a process to start/end.\n
     Valid waituntil values are "start" and "end".\n

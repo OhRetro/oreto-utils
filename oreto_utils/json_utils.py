@@ -7,92 +7,114 @@ __all__ = ["JSON"]
 
 class JSON:
     def __init__(self, file:str, path:str="./", separator:str="."):
-        self.json = ouf_File(file, path)
+        self._json = {
+            "FILE": ouf_File(file, path),
+            "SEPARATOR": separator
+        }
         
         #Checks if the file is a json file
-        if self.json._file["EXT"] != ".json":
+        if self._json["FILE"]._file["EXT"] != ".json":
             raise ValueError("The file is not a json file.")
-        
-        self.separator = separator
     
-    #It will return the whole json file content
+    #Loads the json file
     def load(self) -> dict:
-        """It will return the whole json file content"""
-        return json_loads(self.json.read())
+        """Loads the json file"""
+        return json_loads(self._json["FILE"].read())
     
-    #It will get a specified key from the json file
+    #Gets the value of a key
     def getkey(self, key:str) -> any:
-        """It will get a specified key from the json file"""
-        if self.separator not in key:
-            return self.load()[key]
+        """Gets the value of a key"""
+        json_dict = self.load()
+        
+        if self._json["SEPARATOR"] not in key:
+            return json_dict[key]
 
-        _extrakeys = key.split(self.separator)
-        _key = self.load()[_extrakeys[0]]
-        del _extrakeys[0]
+        og_key = key
+        extrakeys = key.split(self._json["SEPARATOR"])
+        
         try:
-            for _extrakey in _extrakeys:
-                _currentkey = _extrakey
-                _key = _key[_extrakey]
+            for extrakey in extrakeys:        
+                current_key = extrakey
+                key = json_dict[extrakey] if extrakeys.index(current_key) == 0 else key[extrakey]
+
+            return key
+
         except KeyError as e:
-            raise KeyError(f"The key \"{_currentkey}\" does not exist") from e
+            raise KeyError(f"The key \"{current_key}\" in \"{og_key}\" does not exist.") from e
 
-        return _key
-    
-    #It will set a specified key in the json file
+    #Sets the value of a key
     def setkey(self, key:str, value:any) -> None:
-        """It will set a specified key in the json file"""
+        """Sets the value of a key"""
         json_dict = self.load()
 
-        if self.separator not in key:
+        if self._json["SEPARATOR"] not in key:
             json_dict[key] = value
+        
         else:
-            _extrakeys = key.split(self.separator)
-            if not self.existskey(_extrakeys[0]):
-                json_dict[_extrakeys[0]] = {}
-
-            _key = json_dict[_extrakeys[0]]
-            del _extrakeys[0]
-
-            for _extrakey in _extrakeys:
-                if _extrakey == _extrakeys[-1]:
-                    _key[_extrakey] = value
-                    break
-
-                _key = _key[_extrakey]           
-
-        self.json.write(json_dumps(json_dict), True)
-    
-    #It will delete a specified key from the json file
-    def delkey(self, key:str) -> None:
-        """It will delete a specified key from the json file"""
-        json_dict = self.load()
-
-        if self.separator not in key:
-            del json_dict[key]
-        else:
-            _extrakeys = key.split(self.separator)
-            _key = json_dict[_extrakeys[0]]
-            del _extrakeys[0]
-
-            for _extrakey in _extrakeys:
-                if _extrakey == _extrakeys[-1]:
-                    del _key[_extrakey]
+            extrakeys = key.split(self._json["SEPARATOR"])
+            
+            for extrakey in extrakeys:
+                current_key = extrakey
+                                
+                if extrakey == extrakeys[-1]:
+                    key[extrakey] = value
                     break
                 
-                _key = _key[_extrakey]
+                try:
+                    if extrakeys.index(current_key) == 0:
+                        key = json_dict[current_key]
+                    else:
+                        key = key[current_key]
+                    
+                except KeyError:
+                    if extrakeys.index(current_key) == 0:
+                        json_dict[current_key] = {}
+                        key = json_dict[current_key]
+                    else:
+                        key[current_key] = {}
+                        key = key[current_key]
+                    
+        self._json["FILE"].write(json_dumps(json_dict))
+    
+    #Deletes a key
+    def deletekey(self, key:str) -> None:
+        """Deletes a key"""
+        json_dict = self.load()
+        print(json_dict)
+        if self._json["SEPARATOR"] not in key:
+            json_dict.pop(key)
+        else:
+            extrakeys = key.split(self._json["SEPARATOR"])
+            for extrakey in extrakeys:
+                current_key = extrakey
 
-        self.json.write(json_dumps(json_dict), True)
+                if current_key == extrakeys[-1]:    
+                    key.pop(current_key)
+                    break
 
-    #It will check if the key exists in the json file
+                else:
+                    if extrakeys.index(current_key) == 0:
+                        key = json_dict[current_key]
+                    else:
+                        key = key[current_key]
+
+
+        print(json_dict)
+        self._json["FILE"].write(json_dumps(json_dict))
+
+    #Checks if a key exists
     def existskey(self, key:str) -> bool:
-        """It will check if the key exists in the json file"""
+        """Checks if a key exists"""
         try:
             if self.getkey(key) is not None:
                 return True
         except KeyError:
             return False
     
-    #It will get the key type from the json file
+    #Returns what type of the value of a key is
     def keytype(self, key:str) -> any:
-        """It will get the key type from the json file"""
-        return type(self.getkey(key))
+        """Returns what type of the value of a key is"""
+        try:
+            return type(self.getkey(key))
+        except KeyError:
+            return None
