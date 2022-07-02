@@ -5,7 +5,7 @@ from shutil import rmtree
 from contextlib import suppress
 
 _to_delete = ["build", "dist", "oreto_utils.egg-info"]
-_version = "0.8"
+_version = "0.9"
 
 def build():
     system("python setup.py sdist bdist_wheel --universal")

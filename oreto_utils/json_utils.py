@@ -2,24 +2,31 @@
 
 from json import loads as json_loads, dumps as json_dumps
 from oreto_utils.file_utils import File as ouf_File
+from os.path import abspath as osp_abspath
 
 __all__ = ["JSON"]
 
 class JSON:
     def __init__(self, file:str, path:str="./", separator:str="."):
         self._json = {
-            "FILE": ouf_File(file, path),
+            "FILE": ouf_File(file, osp_abspath(path)),
             "SEPARATOR": separator
         }
+
+        self.__file = self._json["FILE"]
+        
+        #Checks if the file exists
+        if not self.__file.exists():
+            raise FileNotFoundError(f"The file \"{self.__file.name}\" does not exist.")
         
         #Checks if the file is a json file
-        if self._json["FILE"]._file["EXT"] != ".json":
+        if self.__file._file["EXT"] != ".json":
             raise ValueError("The file is not a json file.")
     
     #Loads the json file
     def load(self) -> dict:
         """Loads the json file"""
-        return json_loads(self._json["FILE"].read())
+        return json_loads(self.__file.read())
     
     #Gets the value of a key
     def getkey(self, key:str) -> any:
@@ -74,13 +81,12 @@ class JSON:
                         key[current_key] = {}
                         key = key[current_key]
                     
-        self._json["FILE"].write(json_dumps(json_dict))
+        self.__file.write(json_dumps(json_dict))
     
     #Deletes a key
     def deletekey(self, key:str) -> None:
         """Deletes a key"""
         json_dict = self.load()
-        print(json_dict)
         if self._json["SEPARATOR"] not in key:
             json_dict.pop(key)
         else:
@@ -98,9 +104,7 @@ class JSON:
                     else:
                         key = key[current_key]
 
-
-        print(json_dict)
-        self._json["FILE"].write(json_dumps(json_dict))
+        self.__file.write(json_dumps(json_dict))
 
     #Checks if a key exists
     def existskey(self, key:str) -> bool:
