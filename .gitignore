@@ -164,4 +164,4 @@ cython_debug/
 #It's for something
 *tests*
 *test*
-./menu.py
+*menu*
