@@ -4,8 +4,6 @@ It's a collection of useful utilities.\n
 Available utilities:
 - terminal_utils: Terminal utilities.
 - process_utils: Process utilities.
-- multiprocessing_utils: Multiprocessing utilities.
-- thread_utils: Thread utilities.
 - json_utils: JSON utilities.
 - file_utils: File utilities.
 - folder_utils: Folder utilities.
