@@ -1,7 +1,8 @@
 #Others
 
+from tracemalloc import start
 from oreto_utils.terminal_utils import clearlines as out_clearlines
-from time import sleep as t_sleep
+from time import sleep as t_sleep, time as t_time, strftime as t_strftime
 
 __all__ = ["countdown", "formatsize", "searchlist"]
 

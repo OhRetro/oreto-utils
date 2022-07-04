@@ -3,9 +3,10 @@
 from os import remove as os_remove, rename as os_rename
 from os.path import isfile as osp_isfile, getsize as osp_getsize, isdir as osp_isdir, abspath as osp_abspath
 from shutil import move as sh_move, copy as sh_copy
-from oreto_utils.tkinter_utils import filedialog as outk_filedialog
+from oreto_utils.tkinter_utils import dialog as outk_dialog
+from oreto_utils.others_utils import formatsize as ouo_formatsize
 
-__all__ = ["File", "Files"]
+__all__ = ["File", "fileselect", "filesize"]
 
 class File:
     def __init__(self, file:str, path:str="./"):
@@ -140,9 +141,8 @@ class File:
         """It can return a boolean value to indicate if the file was selected or not."""
         if filetypes is None:
             filetypes = [("All Files (*.*)", "*.*")]
-            
-        selected_file = outk_filedialog("FileName", title=title, initialdir=initialdir, filetypes=filetypes)
-        
+
+        selected_file = fileselect(title=title, initialdir=initialdir, filetypes=filetypes)
         if selected_file != "":
             self._file["FILE"] = selected_file.split("/")[-1]
             self._file["PATH"] = "/".join(selected_file.split("/")[:-1])
@@ -152,20 +152,25 @@ class File:
             return False
                 
     #It will get the file total size return it in bytes
-    def size(self) -> int:
+    def size(self, formated:bool=False) -> (str | int):
         """It will return the file total size in bytes."""
-        if not self.exists():
-            raise FileNotFoundError("There is no such file to get the size.")
+        return filesize(self._file["TARGET"], formated)
+    
+#Select File
+def fileselect(title:str="Select a file", initialdir:str=None, filetypes:list[tuple[str]]=None) -> str:
+    """It can return a string value to indicate if the file was selected or not."""
+    if filetypes is None:
+        filetypes = [("All Files (*.*)", "*.*")]
 
-        return osp_getsize(self._file["TARGET"])
-        
-class Files:
-    def select(title:str="Select a file", initialdir:str=None, filetypes:list[tuple]=None, multiple:bool=True) -> (tuple | str):
-        """
-        If the multiple argument is True, it will return a tuple with the selected files even if there is one file selected.\n
-        Else, it will return a string with the selected file.
-        """
-        if filetypes is None:
-            filetypes = [("All Files (*.*)", "*.*")]
-            
-        return outk_filedialog("FileName", title=title, initialdir=initialdir, filetypes=filetypes, multiple=multiple)
+    return outk_dialog("OpenFileName", title=title, initialdir=initialdir, filetypes=filetypes)
+
+#File Size
+def filesize(file:str, autoformat:bool=True) -> (str | int):
+    """It can return a string or integer value to indicate the file size."""
+    if not osp_isfile(file):
+        raise FileNotFoundError("There is no such file to get the size.")
+
+    size = osp_getsize(file)
+    if autoformat:
+        size = ouo_formatsize(size)
+    return size

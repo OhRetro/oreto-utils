@@ -11,7 +11,7 @@ except Exception:
 
 setup(
     name = "oreto-utils",
-    version = "0.8",
+    version = "0.9",
     author = "OhRetro",
     author_email = "notareal@email.com",
     description = "a bunch of utilities to use in my code without copying and pasting the function from code to code",

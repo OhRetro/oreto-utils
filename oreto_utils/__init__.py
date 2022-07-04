@@ -19,4 +19,4 @@ import oreto_utils.terminal
 __title__ = "oreto-utils"
 __author__ = "OhRetro"
 __license__ = "MIT"
-__version__ = "0.8"
+__version__ = "0.9"
