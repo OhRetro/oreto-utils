@@ -4,8 +4,10 @@ from time import sleep
 from shutil import rmtree
 from contextlib import suppress
 
-_to_delete = ["build", "dist", "oreto_utils.egg-info"]
+_name = "oreto-utils"
+_alt = "oreto_utils"
 _version = "0.9"
+_to_delete = ["build", "dist", f"{_alt}.egg-info"]
 
 def build():
     system("python setup.py sdist bdist_wheel --universal")
@@ -20,11 +22,14 @@ def clean():
         rmtree(f"./{_}")
 
 def install():
-    system(f"pip install -U ./dist/oreto-utils-{_version}.tar.gz")
+    system(f"pip install -U ./dist/{_name}-{_version}.tar.gz")
     
 def changeversion():
     global _version
     _version = input("Change version: ")
+
+def check():
+    system("twine check dist/*")
 
 def clterm():
     if name == "nt":
@@ -38,7 +43,7 @@ if __name__ == "__main__":
     _run = True
     while _run:
         print(f"ver: {_version}")
-        print("1.build\n2.upload\n3.clean\n4.install build\n5.change ver\n0.exit\n")
+        print("1.build\n2.upload\n3.clean\n4.install build\n5.change ver\n6.check\n0.exit\n")
         try:
             _inp = input(">")
                         
@@ -69,6 +74,9 @@ if __name__ == "__main__":
             elif _inp == 5:
                 print("Changing:")
                 changeversion()
+            elif _inp == 6:
+                print("Checking:")
+                check()
 
             print("")
             if _inp == 0:
