@@ -113,7 +113,7 @@ class Folder:
 
         contents = self.list()
         
-        if exceptions is None:
+        if exceptions:
             for exception in exceptions:
                 if exception in contents:
                     contents.remove(exception)
