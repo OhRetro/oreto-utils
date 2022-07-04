@@ -4,8 +4,9 @@ from os.path import isdir as osp_isdir, getsize as osp_getsize, join as osp_join
 from os import mkdir as os_mkdir, listdir as os_listdir, remove as os_remove, walk as os_walk, rename as os_rename
 from shutil import rmtree as sh_rmtree, move as sh_move, copytree as sh_copytree, copyfile as sh_copyfile
 from oreto_utils.tkinter_utils import dialog as outk_dialog
+from oreto_utils.others_utils import formatsize as ouo_formatsize
 
-__all__ = ["Folder"]
+__all__ = ["Folder", "folderselect", "foldersize", "folderlist"]
 
 class Folder:
     def __init__(self, folder, parent="./"):
@@ -144,7 +145,7 @@ class Folder:
     #A dialog to select a folder will appear after that it will setup and separate the parent folder and folder name 
     def select(self, title:str="Select a folder", initialdir:str=None, mustexist:bool=False) -> bool:
         """It can return a boolean value to indicate if the folder was selected or not."""
-        selected_folder = outk_dialog("Directory", title=title, initialdir=initialdir, mustexist=mustexist)
+        selected_folder = folderselect(title=title, initialdir=initialdir, mustexist=mustexist)
         if selected_folder != "":
             self._folder["FOLDER"] = selected_folder.split("/")[-1]
             self._folder["PARENT"] = "/".join(selected_folder.split("/")[:-1])+"/"
@@ -154,14 +155,27 @@ class Folder:
             return False
         
     #It will get the folder total size and return it in bytes
-    def size(self) -> int:
-        if not self.exists():
-            raise FileNotFoundError("There is no such folder to get the size.")
+    def size(self, formated:bool=False) -> int:
+        """Returns folder size in bytes or formated."""
+        return foldersize(self._folder["FULL_PATH"], formated)
+    
+#Select Folder
+def folderselect(title:str="Select a folder", initialdir:str=None, mustexist:bool=False) -> str:
+    """It can return a string value to indicate the folder selected or None if the user cancels the dialog."""
+    return outk_dialog("Directory", title=title, initialdir=initialdir, mustexist=mustexist)
 
-        size = 0
-        for path, dirs, files in os_walk(self._folder["FULL_PATH"]):
-            for file in files:
-                filepath = osp_join(path, file)
-                size += osp_getsize(filepath)
-                
-        return size
+#Folder Size
+def foldersize(folder:str, autoformat:bool=True) -> int:
+    """It can return a int value to indicate the size of the folder in bytes."""
+    if not osp_isdir(folder):
+        raise FileNotFoundError("There is no such folder to get the size.")
+    
+    size = 0
+    for path, dirs, files in os_walk(folder):
+        for file in files:
+            filepath = osp_join(path, file)
+            size += osp_getsize(filepath)
+    
+    if autoformat:
+        size = ouo_formatsize(size)
+    return size
